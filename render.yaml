@@ -1,0 +1,48 @@
+services:
+  # Backend FastAPI
+  - type: web
+    name: sentinela-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt && playwright install-deps chromium && playwright install chromium
+    startCommand: "cd backend && python main.py"
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: PYTHON_VERSION
+        value: 3.11
+      # Variáveis de API (adicione seus valores no dashboard Render)
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      # Credenciais Morada
+      - key: MORADA_LOGIN
+        sync: false
+      - key: MORADA_PASSWORD
+        sync: false
+      # Email
+      - key: EMAIL_SENDER
+        sync: false
+      - key: EMAIL_RECIPIENT
+        sync: false
+      # Configurações
+      - key: PERIODO_ANALISE
+        value: 24h
+      - key: SCHEDULE_ENABLED
+        value: "true"
+      - key: SCHEDULE_HOURS
+        value: "09:00"
+
+  # PostgreSQL Database
+  - type: pserv
+    name: sentinela-db
+    env: postgres
+    plan: free
+    ipAllowList: []
+
+databases:
+  - name: sentinela_db
+    plan: free

@@ -1,0 +1,610 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.15.7:3000
+✓ Ready in 684ms
+
+⨯ ./app/master-v3.css:1858:8
+Parsing CSS source code failed
+  [90m1856 |[0m   }
+  [90m1857 |[0m }
+[31m[1m>[0m [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/master-v3.css:
+./app/master-v3.css:1858:8
+  [90m1856 |[0m   }
+  [90m1857 |[0m }
+[31m[1m>[0m [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+
+Import trace:
+  Client Component Browser:
+    ./app/master-v3.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+
+./app/master-v3.css:1859:8
+Parsing CSS source code failed
+  [90m1857 |[0m }
+  [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m     |[0m        [31m[1m^[0m
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+  [90m1862 |[0m   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/master-v3.css:
+./app/master-v3.css:1859:8
+  [90m1857 |[0m }
+  [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m     |[0m        [31m[1m^[0m
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+  [90m1862 |[0m   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/master-v3.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 3.2s (next.js: 3.0s, application-code: 158ms)
+⨯ ./app/master-v3.css:1858:8
+Parsing CSS source code failed
+  [90m1856 |[0m   }
+  [90m1857 |[0m }
+[31m[1m>[0m [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/master-v3.css:
+./app/master-v3.css:1858:8
+  [90m1856 |[0m   }
+  [90m1857 |[0m }
+[31m[1m>[0m [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+
+Import trace:
+  Client Component Browser:
+    ./app/master-v3.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+
+./app/master-v3.css:1859:8
+Parsing CSS source code failed
+  [90m1857 |[0m }
+  [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m     |[0m        [31m[1m^[0m
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+  [90m1862 |[0m   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/master-v3.css:
+./app/master-v3.css:1859:8
+  [90m1857 |[0m }
+  [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m     |[0m        [31m[1m^[0m
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+  [90m1862 |[0m   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/master-v3.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 37ms (next.js: 12ms, application-code: 25ms)
+[browser] Uncaught Error: ./app/master-v3.css:1859:8
+Parsing CSS source code failed
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/master-v3.css:
+./app/master-v3.css:1859:8
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/master-v3.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+    at <unknown> (Error: ./app/master-v3.css:1859:8)
+    at <unknown> (./app/master-v3.css:1859:8)
+    at <unknown> (Error: (./app/master-v3.css:1859:8)
+    at <unknown> (./app/master-v3.css:1859:8)
+[browser] Uncaught Error: ./app/master-v3.css:1859:8
+Parsing CSS source code failed
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/master-v3.css:
+./app/master-v3.css:1859:8
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/master-v3.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+    at <unknown> (Error: ./app/master-v3.css:1859:8)
+    at <unknown> (./app/master-v3.css:1859:8)
+    at <unknown> (Error: (./app/master-v3.css:1859:8)
+    at <unknown> (./app/master-v3.css:1859:8)
+[browser] ./app/master-v3.css:1859:8
+Parsing CSS source code failed
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/master-v3.css:
+./app/master-v3.css:1859:8
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/master-v3.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component] 
+[browser] ./app/master-v3.css:1859:8
+Parsing CSS source code failed
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/master-v3.css:
+./app/master-v3.css:1859:8
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/master-v3.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component] 
+[browser] ./app/master-v3.css:1859:8
+Parsing CSS source code failed
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/master-v3.css:
+./app/master-v3.css:1859:8
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/master-v3.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component] 
+⨯ ./app/layout.tsx:2:1
+Module not found: Can't resolve './master-v3.css'
+  [90m1 |[0m [32m'use client'[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m [32m"./master-v3.css"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mimport[0m [33mSidebar[0m [36mfrom[0m [32m"../components/Sidebar"[0m;
+  [90m4 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+  [90m5 |[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/layout.tsx:2:1
+Module not found: Can't resolve './master-v3.css'
+  [90m1 |[0m [32m'use client'[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m [32m"./master-v3.css"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mimport[0m [33mSidebar[0m [36mfrom[0m [32m"../components/Sidebar"[0m;
+  [90m4 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+  [90m5 |[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/layout.tsx:2:1
+Module not found: Can't resolve './master-v3.css'
+  [90m1 |[0m [32m'use client'[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m [32m"./master-v3.css"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mimport[0m [33mSidebar[0m [36mfrom[0m [32m"../components/Sidebar"[0m;
+  [90m4 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+  [90m5 |[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET / 500 in 100ms (next.js: 67ms, application-code: 33ms)
+⨯ ./app/layout.tsx:2:1
+Module not found: Can't resolve './master-v3.css'
+  [90m1 |[0m [32m'use client'[0m;
+[31m[1m>[0m [90m2 |[0m [36mimport[0m [32m"./master-v3.css"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mimport[0m [33mSidebar[0m [36mfrom[0m [32m"../components/Sidebar"[0m;
+  [90m4 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+  [90m5 |[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET / 500 in 35ms (next.js: 14ms, application-code: 21ms)
+[browser] Uncaught Error: ./app/layout.tsx:2:1
+Module not found: Can't resolve './master-v3.css'
+  1 | 'use client';
+> 2 | import "./master-v3.css";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import Sidebar from "../components/Sidebar";
+  4 | import { usePathname } from 'next/navigation';
+  5 |
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./app/layout.tsx:2:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (Error: (./app/layout.tsx:2:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+[browser] Uncaught Error: ./app/layout.tsx:2:1
+Module not found: Can't resolve './master-v3.css'
+  1 | 'use client';
+> 2 | import "./master-v3.css";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^
+  3 | import Sidebar from "../components/Sidebar";
+  4 | import { usePathname } from 'next/navigation';
+  5 |
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./app/layout.tsx:2:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (Error: (./app/layout.tsx:2:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+⨯ ./app/v3-harmony.css:1858:8
+Parsing CSS source code failed
+  [90m1856 |[0m   }
+  [90m1857 |[0m }
+[31m[1m>[0m [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/v3-harmony.css:
+./app/v3-harmony.css:1858:8
+  [90m1856 |[0m   }
+  [90m1857 |[0m }
+[31m[1m>[0m [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+
+Import trace:
+  Client Component Browser:
+    ./app/v3-harmony.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+
+./app/v3-harmony.css:1859:8
+Parsing CSS source code failed
+  [90m1857 |[0m }
+  [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m     |[0m        [31m[1m^[0m
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+  [90m1862 |[0m   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/v3-harmony.css:
+./app/v3-harmony.css:1859:8
+  [90m1857 |[0m }
+  [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m     |[0m        [31m[1m^[0m
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+  [90m1862 |[0m   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/v3-harmony.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 39ms (next.js: 27ms, application-code: 12ms)
+⨯ ./app/v3-harmony.css:1858:8
+Parsing CSS source code failed
+  [90m1856 |[0m   }
+  [90m1857 |[0m }
+[31m[1m>[0m [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/v3-harmony.css:
+./app/v3-harmony.css:1858:8
+  [90m1856 |[0m   }
+  [90m1857 |[0m }
+[31m[1m>[0m [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+
+Import trace:
+  Client Component Browser:
+    ./app/v3-harmony.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+
+./app/v3-harmony.css:1859:8
+Parsing CSS source code failed
+  [90m1857 |[0m }
+  [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m     |[0m        [31m[1m^[0m
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+  [90m1862 |[0m   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/v3-harmony.css:
+./app/v3-harmony.css:1859:8
+  [90m1857 |[0m }
+  [90m1858 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1859 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'[0m);
+  [90m     |[0m        [31m[1m^[0m
+  [90m1860 |[0m :root {
+  [90m1861 |[0m   --background: #[35m030712[0m;
+  [90m1862 |[0m   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/v3-harmony.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 25ms (next.js: 11ms, application-code: 14ms)
+[browser] Uncaught Error: ./app/v3-harmony.css:1859:8
+Parsing CSS source code failed
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/v3-harmony.css:
+./app/v3-harmony.css:1859:8
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/v3-harmony.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+    at <unknown> (Error: ./app/v3-harmony.css:1859:8)
+    at <unknown> (./app/v3-harmony.css:1859:8)
+    at <unknown> (Error: (./app/v3-harmony.css:1859:8)
+    at <unknown> (./app/v3-harmony.css:1859:8)
+[browser] Uncaught Error: ./app/v3-harmony.css:1859:8
+Parsing CSS source code failed
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/v3-harmony.css:
+./app/v3-harmony.css:1859:8
+  1857 | }
+  1858 | @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa...
+> 1859 | @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       |        ^
+  1860 | :root {
+  1861 |   --background: #030712;
+  1862 |   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/v3-harmony.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+    at <unknown> (Error: ./app/v3-harmony.css:1859:8)
+    at <unknown> (./app/v3-harmony.css:1859:8)
+    at <unknown> (Error: (./app/v3-harmony.css:1859:8)
+    at <unknown> (./app/v3-harmony.css:1859:8)

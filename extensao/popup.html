@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { width: 300px; padding: 15px; background: #030303; color: white; font-family: 'Inter', sans-serif; }
+        h1 { font-size: 14px; color: #00f2ff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; }
+        .field { margin-bottom: 12px; }
+        label { display: block; font-size: 8px; color: #666; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; }
+        input { width: 90%; background: #0a0a0c; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 8px 10px; color: white; font-size: 10px; }
+        button { width: 100%; background: #00f2ff; color: black; border: none; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 9px; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .status { font-size: 8px; color: #10b981; margin-top: 10px; text-align: center; display: none; }
+    </style>
+</head>
+<body>
+    <h1>Sentinela IA</h1>
+    <div class="field">
+        <label>URL do Servidor (Link Cloudflare)</label>
+        <input type="text" id="url" placeholder="https://...trycloudflare.com">
+    </div>
+    <div class="field">
+        <label>Seu Usuário Sentinela</label>
+        <input type="text" id="username" placeholder="joao.sdr">
+    </div>
+    <button id="save">Salvar Configurações</button>
+    <div id="status" class="status">CONFIGURAÇÕES SALVAS!</div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            chrome.storage.local.get(['sentinela_backend_url', 'sentinela_username'], (result) => {
+                if(result.sentinela_backend_url) document.getElementById('url').value = result.sentinela_backend_url;
+                if(result.sentinela_username) document.getElementById('username').value = result.sentinela_username;
+            });
+
+            document.getElementById('save').onclick = () => {
+                const url = document.getElementById('url').value.trim();
+                const username = document.getElementById('username').value.trim();
+                chrome.storage.local.set({
+                    sentinela_backend_url: url,
+                    sentinela_username: username
+                }, () => {
+                    const status = document.getElementById('status');
+                    status.style.display = 'block';
+                    setTimeout(() => status.style.display = 'none', 2000);
+                });
+            };
+        });
+    </script>
+</body>
+</html>

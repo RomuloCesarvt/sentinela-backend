@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "Sentinela IA - Auditor de Leads",
+  "version": "1.0",
+  "description": "Auditoria inteligente de conversas do Morada AI para a Moura Leite.",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://app.morada.ai/*",
+    "https://*.trycloudflare.com/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*",
+    "*://*.vercel.app/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "externally_connectable": {
+    "matches": [
+      "*://*.trycloudflare.com/*",
+      "http://localhost/*",
+      "http://127.0.0.1/*",
+      "*://*.vercel.app/*"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://app.morada.ai/conversations/*",
+        "*://*.trycloudflare.com/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "*://*.vercel.app/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

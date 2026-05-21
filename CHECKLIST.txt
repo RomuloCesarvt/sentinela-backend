@@ -1,0 +1,141 @@
+#!/bin/bash
+# Checklist de Deploy Sentinela IA
+
+cat << 'EOF'
+
+████████████████████████████████████████████████████████
+█                                                      █
+█   SENTINELA IA - CHECKLIST DE DEPLOY NA WEB       █
+█                                                      █
+████████████████████████████████████████████████████████
+
+🔧 FASE 1: PREPARAÇÃO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Arquivos criados:
+   ✓ .gitignore           → Protege credentials
+   ✓ .env.example         → Template de variáveis
+   ✓ Dockerfile           → Config para Railway
+   ✓ railway.json         → Estratégia de build
+   ✓ init_config.py       → Init seguro de config
+   ✓ init_users.py        → Init de usuários
+   ✓ DEPLOY_GUIDE.md      → Guia completo
+   ✓ QUICK_START.md       → Resumo rápido
+
+
+📋 FASE 2: SUAS TAREFAS (NA ORDEM)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣  [ ] INSTALAR GIT
+    → https://git-scm.com/
+    → Versão Windows
+    → Deixar padrão
+    → Reiniciar PowerShell
+
+2️⃣  [ ] FAZER GIT COMMIT E PUSH
+    → Abrir PowerShell
+    → Executar:
+      cd "C:\Users\RomuloMeloMouraLeite\.gemini\antigravity\scratch\sentinela_ia_v2"
+      git init
+      git config user.email "romulo.melo@mouraleite.com.br"
+      git config user.name "Romulo Melo"
+      git add .
+      git commit -m "Initial commit: Sentinela IA"
+
+3️⃣  [ ] CRIAR REPOSITÓRIO NO GITHUB
+    → https://github.com/new
+    → Nome: sentinela_ia_v2
+    → Visibility: PUBLIC (importante!)
+    → Create repository
+    → Copiar URL HTTPS
+
+4️⃣  [ ] FAZER PUSH PARA GITHUB
+    → Na PowerShell:
+      git branch -M main
+      git remote add origin [COLA_A_URL_AQUI]
+      git push -u origin main
+
+5️⃣  [ ] CRIAR CONTA RAILWAY
+    → https://railway.app
+    → Sign Up with GitHub
+    → Authorize Railway
+
+6️⃣  [ ] CONECTAR GITHUB AO RAILWAY
+    → New Project
+    → Deploy from GitHub repo
+    → Selecionar sentinela_ia_v2
+    → Deploy
+    → ⏳ Aguardar build (3-5 min)
+
+7️⃣  [ ] ADICIONAR VARIÁVEIS DE AMBIENTE
+    → No painel Railway
+    → Aba "Variables"
+    → Adicionar cada variável:
+       GROQ_API_KEY
+       GEMINI_API_KEY
+       EMAIL_SENDER
+       EMAIL_RECIPIENT
+       PORT=8000
+
+8️⃣  [ ] AGUARDAR DEPLOYMENT VERDE ✅
+    → Aba "Deployments"
+    → Esperar Status = "Success"
+
+9️⃣  [ ] ACESSAR SUA URL
+    → Aba "Settings"
+    → Copiar Domain URL
+    → Abrir no navegador
+    → Fazer login com suas credenciais
+
+
+🎯 RESULTADO FINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Após completar tudo:
+
+✅ Seu Sentinela estará online
+✅ URL pública que você pode compartilhar
+✅ Outros usuários podem acessar com login
+✅ 100% gratuito com Railway
+✅ Autoscaling automático
+✅ Backups automáticos
+
+
+💡 DICAS IMPORTANTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• Se tiver erro no Git → Reinstale Git
+• Se tiver erro no GitHub → Use Personal Access Token
+• Se Railway demorar → Beba um café, leva 5 min mesmo 😄
+• Se quebrar algo → Pode fazer "redeploy" sem problemas
+• Para adicionar usuários → Use dashboard após login
+
+
+⏱️ TEMPO ESTIMADO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Instalar Git:     5 min
+Commit/Push:      5 min
+GitHub:           3 min
+Railway Deploy:   15 min
+Config Variables: 5 min
+Primeiro teste:   2 min
+─────────────────────
+TOTAL:            35 min ⏰
+
+
+❓ PRECISA DE AJUDA?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• Ver DEPLOY_GUIDE.md para instruções detalhadas
+• Ver QUICK_START.md para resumo rápido
+• Problemas comuns estão em DEPLOY_GUIDE.md
+
+
+════════════════════════════════════════════════════════
+
+BOA SORTE! 🚀
+
+════════════════════════════════════════════════════════
+
+EOF

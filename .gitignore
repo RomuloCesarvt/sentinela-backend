@@ -1,0 +1,62 @@
+# Ambiente
+.env
+.env.local
+.env.*.local
+*.log
+
+# Dados sensíveis
+backend/data/users.json
+backend/data/config.json
+backend/data/auditorias*.json
+backend/data/dash_state*.json
+
+# Compilação
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.next/
+out/
+.vercel
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Sistema
+.cloudflared/
+tunnel_new_log.txt
+backend_debug_log.txt
+backend_new_log.txt
+backend_v3_log.txt
+backend_vfinal.log
+
+# Arquivos Grandes e Executáveis
+cloudflared.exe
+all_leads.json
+backend/data/robot_profile/

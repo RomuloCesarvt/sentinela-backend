@@ -1,0 +1,25 @@
+Projeto Sentinela IA
+Tudo que enviar aqui, voce vai me responder em portugues do brasil, e vai me ajudar a criar esse projeto
+O projeto é uma automação onde vai analisar as mensagens que chegam no morada ia e vai preencher os resultados da análise em uma dashboard web, que vai ser acessada por um link, e vai mostrar os resultados da análise em tempo real. Essa dashboard vai ser acessada por um link, e vai mostrar os resultados da análise em tempo real, essa dash vai ser o sentinela ia
+O sentinela ia vai ser um sistema de monitoramento, ele vai analisar as mensagens que chegam no morada ia e vai preencher os resultados da análise em uma dashboard web, que vai ser acessada por um link, e vai mostrar os resultados da análise em tempo real. Essa dashboard vai ser acessada por um link, e vai mostrar os resultados da análise em tempo real. 
+O sentinela ia vai ser capaz de entender as mensagens, o contexto e fazer a análise do que é risco, qual mensagem não teve resposta ou qual mensagem precisa de uma interação maior da parte dos nossos SDR.
+O sentinela ia é um agente capaz de entender e ler cada mensagem e preencher a dashboard, ele cria relatórios e análisa conforme o período selecionado em sua dashboard.
+O sentinela ia é um sistema que pode fazer o serviço manual ou automatico, colocando ele em modo automatico, ele faz toda a análise de acordo com a data e período selecionado e programado em sua dashboard.
+O sentinela ia tem uma aurea quando esta fazendo a análise no morada, uma aurea pulsando com cores conforme os status de cada lead, também tem uma ilha dinamica parecida com de um macbook onde leva o nome de cada lead, analisando e a cor do status, a ilha dinamica também é pulsante em cores.
+O sentinela ia tem um sistema de login e senha, onde cada sdr tem sua conta e pode acessar a dashboard com suas credenciais.
+O sentinela ia tem um sistema de relatórios, onde cada sdr tem sua conta e pode acessar a dashboard com suas credenciais.
+O Sentinela ia é extremamente inteligente em suas análises, ele entende de vendas, ele entende de marketing, ele entende de atendimento ao cliente, ele entende de negociação, ele entende de fechamento, ele entende de pós-venda, ele entende de tudo que envolve vendas.
+O sentinela ia é um sistema que pode ser acessado por qualquer pessoa, desde que tenha as credenciais de login e senha. 
+O sentinela ia vai trazer os status de cada lead, se esta critico, em análise, ou se ja foi respondido, se foi respondido ele vai trazer a resposta, se não foi respondido ele vai trazer a mensagem que precisa ser respondida, se esta em análise ele vai trazer a mensagem que esta sendo analisada, se esta critico ele vai trazer a mensagem que precisa de uma interação maior da parte dos nossos SDR.
+O sentinela ia precisa ter 4 status para o lead, saudável,atenção,critico, e respondido, cada um com sua cor, saudável é verde, atenção é amarelo, critico é vermelho, e respondido é azul.
+O saudável é quando o lead respondeu de forma positiva e esta engajado, o atenção é quando o lead respondeu de forma neutra e esta em análise, o critico é quando o lead respondeu de forma negativa e esta em análise, e o respondido é quando o lead ja foi respondido e esta em análise.
+O sentinela entende quando o lead não foi respondido e precisa de resposta, quando a IA do Morada falou algo sem sentido e precisa de atenção, ou quando enviou diversas mensagens seguidas sem a interação do lead, entende quando o SDR fala algo que não condiz com o contexto, ou quando passa uma informação que em outra conversa foi diferente se tratando do mesmo empreendimento.
+O sentinela ia no momento é para a análise do morada, em especifico para o mercado imobiliario, para a empresa moura leite loteamentos, que vende loteamentos em diversas cidades do estado de São Paulo
+O sentinela ia é como um double check, ele verifica se a IA do Morada esta fazendo um bom trabalho, se os SDR estão fazendo um bom trabalho, e se os leads estão sendo bem atendidos.   
+O visual do sentinela ia é bem intuitivo, pode ter opção kambam para que mude os status dos leads conforme for solucionando os problemas.
+O sentinela ia sempre vai trazer um plano de ação para que o SDR possa resolver o problema do lead, ou para que a IA do Morada possa resolver o problema do lead, ou para que o SDR possa resolver o problema do lead.
+O sentinela ia sempre vai trazer sugestões de respostas para o SDR, caso ele precise de ajuda para responder o lead.
+O sentinela ia sempre vai trazer a mensagem que precisa ser respondida, a mensagem que esta sendo analisada, e a mensagem que precisa de uma interação maior da parte dos nossos SDR.
+O sentinela ia sempre vai ler a conversa inteira para entender o contexto e fazer a análise do que é risco, qual mensagem não teve resposta ou qual mensagem precisa de uma interação maior da parte dos nossos SDR.
+O sentinela ia tem a sua logo, que ja esta criada nos meus downloads
+O sistema será totalmente preciso, sem margem de erros, ele vai analisar cada mensagem, cada contexto, cada interação, e vai trazer os resultados da análise em tempo real.

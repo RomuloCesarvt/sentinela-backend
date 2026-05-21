@@ -1,0 +1,1671 @@
+
+> frontend@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.15.71:3000
+✓ Ready in 721ms
+
+ GET / 200 in 2.4s (next.js: 2.2s, application-code: 240ms)
+ GET / 200 in 80ms (next.js: 12ms, application-code: 68ms)
+⚠ Blocked cross-origin request to Next.js dev resource /_next/webpack-hmr from "sentinela-moura-v2.loca.lt".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['sentinela-moura-v2.loca.lt'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET / 200 in 130ms (next.js: 5ms, application-code: 125ms)
+ GET / 200 in 84ms (next.js: 5ms, application-code: 79ms)
+ GET / 200 in 88ms (next.js: 6ms, application-code: 82ms)
+ GET / 200 in 62ms (next.js: 7ms, application-code: 56ms)
+ GET / 200 in 67ms (next.js: 5ms, application-code: 61ms)
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET / 500 in 1521ms (next.js: 1294ms, application-code: 227ms)
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./app/page.tsx:6:1
+Module not found: Can't resolve 'lucide-react'
+  [90m4 |[0m [36mimport[0m [33mAuraIsland[0m [36mfrom[0m [32m'../components/AuraIsland'[0m;
+  [90m5 |[0m [36mimport[0m [33mLeadKanban[0m [36mfrom[0m [32m'../components/LeadKanban'[0m;
+[31m[1m>[0m [90m6 |[0m [36mimport[0m { [33mBarChart3[0m, [33mScan[0m, [33mShieldAlert[0m, [33mSparkles[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m7 |[0m
+  [90m8 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mDashboard[0m() {
+  [90m9 |[0m   [36mconst[0m [leads, setLeads] = useState<any[]>([]);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+
+./components/Sidebar.tsx:4:1
+Module not found: Can't resolve 'lucide-react'
+  [90m 2 |[0m [36mimport[0m [33mLink[0m [36mfrom[0m [32m'next/link'[0m;
+  [90m 3 |[0m [36mimport[0m { usePathname } [36mfrom[0m [32m'next/navigation'[0m;
+[31m[1m>[0m [90m 4 |[0m [36mimport[0m { 
+  [90m   |[0m [31m[1m^^^^^^^^[0m
+[31m[1m>[0m [90m 5 |[0m   [33mLayoutDashboard[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 6 |[0m   [33mFileText[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 7 |[0m   [33mCalendarClock[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 8 |[0m   [33mSettings[0m, 
+  [90m   |[0m [31m[1m^^^^^^^^^^^^[0m
+[31m[1m>[0m [90m 9 |[0m   [33mLogOut[0m 
+  [90m   |[0m [31m[1m^^^^^^^^^[0m
+[31m[1m>[0m [90m10 |[0m } [36mfrom[0m [32m'lucide-react'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m
+  [90m12 |[0m [36mexport[0m [36mdefault[0m [36mfunction[0m [33mSidebar[0m() {
+  [90m13 |[0m   [36mconst[0m pathname = usePathname();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./components/Sidebar.tsx [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/Sidebar.tsx [Client Component SSR]
+    ./app/layout.tsx [Client Component SSR]
+    ./app/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+ GET / 500 in 45ms (next.js: 32ms, application-code: 14ms)
+⚠ Blocked cross-origin request to Next.js dev resource /__nextjs_original-stack-frames from "sentinela-moura-v2.loca.lt".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['sentinela-moura-v2.loca.lt'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+✓ Compiled in 122ms
+ GET / 200 in 278ms (next.js: 84ms, application-code: 194ms)
+ GET / 200 in 70ms (next.js: 6ms, application-code: 65ms)
+ GET / 200 in 59ms (next.js: 5ms, application-code: 54ms)
+ GET /reports 200 in 547ms (next.js: 484ms, application-code: 63ms)
+ GET /schedule 200 in 596ms (next.js: 534ms, application-code: 62ms)
+ GET /settings 200 in 507ms (next.js: 452ms, application-code: 55ms)
+ GET / 200 in 69ms (next.js: 4ms, application-code: 65ms)
+ GET / 200 in 64ms (next.js: 5ms, application-code: 59ms)
+ GET / 200 in 262ms (next.js: 89ms, application-code: 173ms)
+ GET / 200 in 69ms (next.js: 6ms, application-code: 64ms)
+ GET / 200 in 259ms (next.js: 89ms, application-code: 170ms)
+⨯ ./app/globals.css:1801:8
+Parsing CSS source code failed
+  [90m1799 |[0m   }
+  [90m1800 |[0m }
+[31m[1m>[0m [90m1801 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1802 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1803 |[0m :root {
+  [90m1804 |[0m   --background: #[35m030712[0m;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1801:8
+  [90m1799 |[0m   }
+  [90m1800 |[0m }
+[31m[1m>[0m [90m1801 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1802 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1803 |[0m :root {
+  [90m1804 |[0m   --background: #[35m030712[0m;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+
+./app/globals.css:1802:8
+Parsing CSS source code failed
+  [90m1800 |[0m }
+  [90m1801 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1802 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1803 |[0m :root {
+  [90m1804 |[0m   --background: #[35m030712[0m;
+  [90m1805 |[0m   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1802:8
+  [90m1800 |[0m }
+  [90m1801 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1802 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1803 |[0m :root {
+  [90m1804 |[0m   --background: #[35m030712[0m;
+  [90m1805 |[0m   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 36ms (next.js: 12ms, application-code: 24ms)
+⨯ ./app/globals.css:1957:8
+Parsing CSS source code failed
+  [90m1955 |[0m   }
+  [90m1956 |[0m }
+[31m[1m>[0m [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1957:8
+  [90m1955 |[0m   }
+  [90m1956 |[0m }
+[31m[1m>[0m [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+
+./app/globals.css:1958:8
+Parsing CSS source code failed
+  [90m1956 |[0m }
+  [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+  [90m1961 |[0m   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1958:8
+  [90m1956 |[0m }
+  [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+  [90m1961 |[0m   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 39ms (next.js: 27ms, application-code: 12ms)
+⨯ ./app/globals.css:1957:8
+Parsing CSS source code failed
+  [90m1955 |[0m   }
+  [90m1956 |[0m }
+[31m[1m>[0m [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1957:8
+  [90m1955 |[0m   }
+  [90m1956 |[0m }
+[31m[1m>[0m [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+
+./app/globals.css:1958:8
+Parsing CSS source code failed
+  [90m1956 |[0m }
+  [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+  [90m1961 |[0m   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1958:8
+  [90m1956 |[0m }
+  [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+  [90m1961 |[0m   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 24ms (next.js: 10ms, application-code: 14ms)
+⨯ ./app/globals.css:1957:8
+Parsing CSS source code failed
+  [90m1955 |[0m   }
+  [90m1956 |[0m }
+[31m[1m>[0m [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1957:8
+  [90m1955 |[0m   }
+  [90m1956 |[0m }
+[31m[1m>[0m [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+
+./app/globals.css:1958:8
+Parsing CSS source code failed
+  [90m1956 |[0m }
+  [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+  [90m1961 |[0m   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1958:8
+  [90m1956 |[0m }
+  [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+  [90m1961 |[0m   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 24ms (next.js: 11ms, application-code: 13ms)
+⨯ ./app/globals.css:1957:8
+Parsing CSS source code failed
+  [90m1955 |[0m   }
+  [90m1956 |[0m }
+[31m[1m>[0m [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1957:8
+  [90m1955 |[0m   }
+  [90m1956 |[0m }
+[31m[1m>[0m [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+
+./app/globals.css:1958:8
+Parsing CSS source code failed
+  [90m1956 |[0m }
+  [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+  [90m1961 |[0m   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1958:8
+  [90m1956 |[0m }
+  [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+  [90m1961 |[0m   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 22ms (next.js: 10ms, application-code: 12ms)
+⨯ ./app/globals.css:1957:8
+Parsing CSS source code failed
+  [90m1955 |[0m   }
+  [90m1956 |[0m }
+[31m[1m>[0m [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1957:8
+  [90m1955 |[0m   }
+  [90m1956 |[0m }
+[31m[1m>[0m [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+  [90m     |[0m        [31m[1m^[0m
+  [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+
+./app/globals.css:1958:8
+Parsing CSS source code failed
+  [90m1956 |[0m }
+  [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+  [90m1961 |[0m   --foreground: #f8fafc;
+
+@import rules must precede all rules aside from @charset and @layer statements
+
+Generated code of PostCSS transform of file content of app/globals.css:
+./app/globals.css:1958:8
+  [90m1956 |[0m }
+  [90m1957 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swa..[0m.
+[31m[1m>[0m [90m1958 |[0m @[36mimport[0m url([32m'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100....[0m
+  [90m     |[0m        [31m[1m^[0m
+  [90m1959 |[0m :root {
+  [90m1960 |[0m   --background: #[35m030712[0m;
+  [90m1961 |[0m   --foreground: #f8fafc;
+
+Import trace:
+  Client Component Browser:
+    ./app/globals.css [Client Component Browser]
+    ./app/layout.tsx [Client Component Browser]
+    ./app/layout.tsx [Server Component]
+
+
+ GET / 500 in 27ms (next.js: 11ms, application-code: 16ms)
+⚠ Found a change in next.config.js. Restarting the server to apply the changes...
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.15.71:3000
+✓ Ready in 710ms
+

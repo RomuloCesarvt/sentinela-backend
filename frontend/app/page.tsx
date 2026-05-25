@@ -14,6 +14,7 @@ export default function Dashboard() {
   const [period, setPeriod] = useState('24h');
   const [scanLock, setScanLock] = useState({ is_locked: false, locked_by: null });
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [backendUrl, setBackendUrl] = useState('');
 
   // Usa URLs relativas para funcionar perfeitamente no Cloudflare Tunnel e localhost
   const API_BASE = '/api';
@@ -52,9 +53,17 @@ export default function Dashboard() {
       }
     });
 
+    const unsubConfig = onSnapshot(doc(db, 'system', 'config'), (doc) => {
+      if (doc.exists()) {
+        const configData = doc.data();
+        setBackendUrl(configData.backend_url || '');
+      }
+    });
+
     return () => {
       unsubLeads();
       unsubLock();
+      unsubConfig();
     };
   }, [router]);
 
@@ -76,7 +85,11 @@ export default function Dashboard() {
     // 1. TENTA USAR A EXTENSÃO (Abre aba ao lado no seu Chrome atual)
     if (document.documentElement.dataset.sentinelaExtension === "true") {
         window.dispatchEvent(new CustomEvent('SENTINELA_SCAN_TRIGGER', { 
-            detail: { period, username: user.username } 
+            detail: { 
+                period, 
+                username: user.username,
+                backendUrl: backendUrl || process.env.NEXT_PUBLIC_API_URL || window.location.origin
+            } 
         }));
     } 
     // 2. FALLBACK PARA O BACKEND PYTHON
@@ -92,19 +105,32 @@ export default function Dashboard() {
   };
 
   const handleClear = async () => {
-    if (!confirm("Deseja limpar TODOS os leads do Firebase? Esta ação não pode ser desfeita.")) return;
+    if (!confirm("Deseja limpar TODOS os leads? Esta ação não pode ser desfeita.")) return;
     try {
+      const user = JSON.parse(localStorage.getItem('sentinela_user') || '{}');
+      
+      // 1. Envia comando para o backend via Firebase (limpa JSON locais + Firestore no servidor)
+      await addDoc(collection(db, 'commands'), {
+        command: 'clear',
+        status: 'pending',
+        username: user.username || 'admin',
+        timestamp: Date.now()
+      });
+
+      // 2. Limpa imediatamente no Firebase Firestore no cliente (feedback instantâneo)
       const snapshot = await getDocs(collection(db, 'leads'));
       const promises = snapshot.docs.map(d => deleteDoc(d.ref));
       await Promise.all(promises);
       await setDoc(doc(db, 'system', 'lock'), { is_locked: false, locked_by: null, error: null }, { merge: true });
+      
       setLeads([]);
       alert("✅ Leads limpos com sucesso!");
     } catch (e) {
       console.error(e);
-      alert("❌ Erro ao limpar leads do Firebase.");
+      alert("❌ Erro ao limpar leads.");
     }
   };
+
 
   // Deduplicar leads por nome: mantém a entrada mais recente de cada lead
   const uniqueLeads = React.useMemo(() => {

@@ -2,6 +2,8 @@
 
 Sistema web de análise inteligente de leads para o mercado imobiliário, com suporte multi-usuário, análise IA em tempo real e geração de relatórios.
 
+> ⚠️ **IMPORTANTE**: Credenciais foram removidas do repositório por segurança. Veja [SETUP_LOCAL.md](./SETUP_LOCAL.md) para configurar seu ambiente local.
+
 ## Stack
 
 - **Backend**: FastAPI + Python 3.11

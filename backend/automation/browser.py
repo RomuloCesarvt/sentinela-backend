@@ -253,10 +253,85 @@ def clean_message_history(raw_history: list, lead_name: str) -> list:
 
 
 
-async def extract_morada_leads(period: str = "24h", custom_range: dict = None, scan_id: str = None, username: str = None):
+def get_browser_paths():
+    """Retorna o executável e o diretório de perfil para Chrome ou Edge (preferindo Chrome)."""
+    profile_dir = os.path.join(DATA_DIR, "browser_profile")
+    
+    # 1. Google Chrome paths
+    chrome_paths = [
+        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+        r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+        os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe")
+    ]
+    chrome_exe = next((cp for cp in chrome_paths if os.path.exists(cp)), None)
+    if chrome_exe:
+        return {
+            "type": "chrome",
+            "exe": chrome_exe,
+            "profile": profile_dir,
+            "process_name": "chrome.exe"
+        }
+        
+    # 2. Microsoft Edge fallback
+    edge_paths = [
+        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+        os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Edge\Application\msedge.exe")
+    ]
+    edge_exe = next((ep for ep in edge_paths if os.path.exists(ep)), None)
+    if edge_exe:
+        return {
+            "type": "edge",
+            "exe": edge_exe,
+            "profile": profile_dir,
+            "process_name": "msedge.exe"
+        }
+        
+    return None
+
+def kill_process_on_port(port: int):
+    """Localiza e finaliza o processo que está ocupando a porta especificada (evita conflitos de CDP)."""
+    import subprocess
+    import platform
+    try:
+        diag_print(f"🔍 Verificando se a porta {port} está ocupada...")
+        if platform.system() == "Windows":
+            # Executa netstat para encontrar o PID na porta
+            result = subprocess.run(
+                ["netstat", "-ano"],
+                capture_output=True,
+                text=True,
+                shell=True
+            )
+            pids = set()
+            for line in result.stdout.splitlines():
+                if f":{port}" in line and "LISTENING" in line:
+                    parts = line.strip().split()
+                    if parts:
+                        pid = parts[-1]
+                        if pid.isdigit() and int(pid) > 0:
+                            pids.add(int(pid))
+            
+            for pid in pids:
+                diag_print(f"💥 Finalizando processo órfão PID {pid} na porta {port}...")
+                subprocess.run(["taskkill", "/F", "/PID", str(pid), "/T"], capture_output=True)
+        else:
+            # Linux/macOS fallback
+            result = subprocess.run(
+                ["lsof", "-t", f"-i:{port}"],
+                capture_output=True,
+                text=True
+            )
+            for pid in result.stdout.strip().split():
+                if pid.isdigit():
+                    subprocess.run(["kill", "-9", pid])
+    except Exception as e:
+        diag_print(f"⚠️ Erro ao tentar limpar a porta {port}: {e}")
+
+async def extract_morada_leads(period: str = "24h", custom_range: dict = None, scan_id: str = None, username: str = None, force_headless: bool = False):
     if not scan_id: scan_id = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
     user_auditorias_file = get_auditorias_file(username)
-    diag_print(f"BOOT MASTER V8.0 — Modo Híbrido (Saas/Local) [ID: {scan_id}] [Usuário: {username or 'global'}]")
+    diag_print(f"BOOT MASTER V8.0 — Modo Híbrido (Saas/Local) [ID: {scan_id}] [Usuário: {username or 'global'}] [Forçar Headless: {force_headless}]")
     
     config = get_config()
     morada_login = config.get("morada_login", "")
@@ -269,128 +344,176 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
         context = None
         page = None
         
-        # ═══ FASE 1: CONECTAR AO NAVEGADOR ═══
-        # Estratégia: CDP direto → Mata Edge + Reabre com CDP → Fallback Chromium headless
-        
-        # TENTATIVA 1: CDP direto (Edge já aberto com depuração)
-        try:
-            diag_print("💻 [1/3] Tentando Conexão CDP Direta (Edge:9333)...")
-            browser = await pw.chromium.connect_over_cdp(CDP_URL, timeout=5000)
-            is_cdp = True
-            context = browser.contexts[0]
-            page = next((pt for pt in context.pages if 'morada.ai' in pt.url), None)
-            if not page:
-                page = await context.new_page()
-            await page.goto("https://app.morada.ai/conversations", timeout=60000, wait_until="domcontentloaded")
-            await page.bring_to_front()
-            diag_print("💻 ✅ Conectado ao Edge via CDP Direto.")
-        except Exception as cdp_err:
-            diag_print(f"💻 CDP Direto falhou: {cdp_err}")
-            browser = None
-            page = None
-            
-            # TENTATIVA 2: Mata Edge, reabre com CDP
+        if force_headless:
+            diag_print("💻 [FORÇADO HEADLESS] Iniciando Chromium headless silencioso (segundo plano)...")
             try:
-                diag_print("💻 [2/3] Abrindo Edge com perfil real do usuário...")
+                browser = await pw.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
+                is_cdp = False
+                diag_print("✅ Chromium headless iniciado em segundo plano.")
+            except Exception as headless_err:
+                raise Exception(f"Falha ao iniciar Chromium headless: {headless_err}")
+        else:
+            # ═══ FASE 1: OBTER NAVEGADOR ═══
+            browser_info = get_browser_paths()
+            if not browser_info:
+                raise Exception("Nenhum navegador suportado (Chrome ou Edge) foi encontrado!")
                 
-                # Fecha instâncias antigas do Edge para liberar a porta de debug
+            b_type = browser_info["type"].upper()
+            b_exe = browser_info["exe"]
+            b_profile = browser_info["profile"]
+            b_proc = browser_info["process_name"]
+            
+            # ═══ FASE 2: CONECTAR AO NAVEGADOR ═══
+            # Estratégia: Conexão CDP direto → Se falhar, limpa porta 9333 órfã, reabre dedicado com Popen → Fallback Chromium headless
+            
+            # TENTATIVA 1: CDP direto (Navegador já aberto com depuração)
+            try:
+                diag_print(f"💻 [1/3] Tentando Conexão CDP Direta ({b_type}:9333)...")
+                browser = await pw.chromium.connect_over_cdp(CDP_URL, timeout=8000)
+                is_cdp = True
+                diag_print(f"💻 ✅ Conectado ao {b_type} via CDP Direto.")
+            except Exception as cdp_err:
+                diag_print(f"💻 CDP Direto inicial falhou: {cdp_err}. Tentando limpar a porta e abrir nova instância dedicada...")
+                
+                # Garante que a porta 9333 está completamente desocupada
+                kill_process_on_port(CDP_PORT)
+                await asyncio.sleep(1.5)
+                
+                # TENTATIVA 2: Abre navegador dedicado com perfil isolado (sem matar o Chrome pessoal do usuário!)
                 try:
-                    subprocess.run(["taskkill", "/F", "/IM", "msedge.exe", "/T"], capture_output=True)
-                    await asyncio.sleep(3)
-                except:
-                    pass
-
-                # Localiza o executável do Edge (CUIDADO: variável 'ep' para não colidir com 'pw')
-                edge_paths = [
-                    r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-                    r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
-                    os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Edge\Application\msedge.exe")
-                ]
-                edge_exe = next((ep for ep in edge_paths if os.path.exists(ep)), None)
-
-                # Perfil real do usuário (onde está logado no Morada)
-                edge_profile = os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Edge\User Data")
-
-                if edge_exe:
-                    diag_print(f"🚀 Lançando Edge: {edge_exe}")
+                    diag_print(f"🚀 Lançando {b_type} dedicado: {b_exe}")
                     subprocess.Popen([
-                        edge_exe,
-                        "--remote-debugging-port=9333",
+                        b_exe,
+                        f"--remote-debugging-port={CDP_PORT}",
                         "--remote-allow-origins=*",
-                        f"--user-data-dir={edge_profile}",
-                        "https://app.morada.ai/conversations",
-                        dashboard_url
+                        f"--user-data-dir={b_profile}"
                     ])
-                else:
-                    diag_print("🚀 Edge exe não encontrado, tentando via 'start msedge'...")
-                    subprocess.Popen(
-                        f'cmd /c start msedge --remote-debugging-port=9333 --remote-allow-origins=* --user-data-dir="{edge_profile}" https://app.morada.ai/conversations "{dashboard_url}"',
-                        shell=True
-                    )
 
-                # Retry progressivo para conectar ao CDP
-                connected = False
-                for wait_secs in [10, 8, 7]:
-                    diag_print(f"⏳ Aguardando Edge inicializar ({wait_secs}s)...")
-                    await asyncio.sleep(wait_secs)
-                    try:
-                        browser = await pw.chromium.connect_over_cdp(CDP_URL, timeout=15000)
-                        is_cdp = True
-                        context = browser.contexts[0]
-                        page = next((pt for pt in context.pages if 'morada.ai' in pt.url), None)
-                        if not page:
-                            page = await context.new_page()
-                        await page.goto("https://app.morada.ai/conversations", timeout=60000, wait_until="domcontentloaded")
-                        diag_print("✅ Conectado ao Edge com perfil real.")
-                        connected = True
-                        break
-                    except Exception as retry_err:
-                        diag_print(f"⚠️ Retry CDP falhou: {retry_err}")
-                        continue
-                
-                if not connected:
-                    raise Exception("Não foi possível conectar ao Edge via CDP após 3 tentativas")
-                    
-            except Exception as edge_err:
-                diag_print(f"❌ Edge CDP falhou: {edge_err}")
-                
-                # TENTATIVA 3: Chromium headless (último recurso — precisa de login manual)
-                is_cloud = platform.system() != 'Windows'
-                diag_print(f"💻 [3/3] Fallback: Chromium {'headless (nuvem)' if is_cloud else 'visível (local)'}...")
-                try:
-                    browser = await pw.chromium.launch(headless=is_cloud, args=['--no-sandbox', '--disable-setuid-sandbox'])
-                    is_cdp = False
-                    context = await browser.new_context()
-                    page = await context.new_page()
-                    await page.goto("https://app.morada.ai/conversations", timeout=60000, wait_until="domcontentloaded")
-                    
-                    # Tenta login automático se credenciais existem
-                    if morada_login and morada_pass and morada_login != "your_login_here":
-                        diag_print(f"🔐 Tentando login automático com {morada_login}...")
+                    # Retry progressivo para conectar ao CDP
+                    connected = False
+                    diag_print(f"⏳ Aguardando {b_type} inicializar e responder no CDP...")
+                    for attempt in range(1, 6):
                         await asyncio.sleep(3)
                         try:
-                            email_input = await page.wait_for_selector('input[type="email"], input[name="email"], input[placeholder*="email" i]', timeout=10000)
-                            if email_input:
-                                await email_input.fill(morada_login)
-                                pass_input = await page.query_selector('input[type="password"]')
-                                if pass_input:
-                                    await pass_input.fill(morada_pass)
-                                    submit_btn = await page.query_selector('button[type="submit"], button:has-text("Entrar"), button:has-text("Login")')
-                                    if submit_btn:
-                                        await submit_btn.click()
-                                        await asyncio.sleep(5)
-                                        await page.goto("https://app.morada.ai/conversations", timeout=60000, wait_until="domcontentloaded")
-                                        diag_print("✅ Login automático realizado.")
-                        except Exception as login_err:
-                            diag_print(f"⚠️ Login automático falhou: {login_err}")
-                    else:
-                        diag_print("⚠️ Sem credenciais do Morada configuradas. Configure em Painel de Controle.")
+                            diag_print(f"🔄 Tentando conectar ao CDP (Tentativa {attempt}/5)...")
+                            browser = await pw.chromium.connect_over_cdp(CDP_URL, timeout=6000)
+                            is_cdp = True
+                            diag_print(f"✅ Conectado com sucesso ao {b_type} dedicado!")
+                            connected = True
+                            break
+                        except Exception as retry_err:
+                            diag_print(f"⚠️ Tentativa {attempt} de CDP falhou: {retry_err}")
+                            continue
                     
-                    diag_print("✅ Chromium headless conectado (fallback).")
-                except Exception as headless_err:
-                    raise Exception(f"Todos os métodos de conexão falharam. Último erro: {headless_err}")
+                    if not connected:
+                        raise Exception(f"Não foi possível conectar ao {b_type} via CDP após 5 tentativas de reinicialização")
+                        
+                except Exception as launch_err:
+                    diag_print(f"❌ Falha ao lançar {b_type} dedicado: {launch_err}")
+                    
+                    # TENTATIVA 3: Chromium headless (último recurso — silencioso em background)
+                    diag_print("💻 [3/3] Fallback: Chromium headless silencioso (segundo plano)...")
+                    try:
+                        browser = await pw.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
+                        is_cdp = False
+                        diag_print("✅ Chromium headless conectado (fallback).")
+                    except Exception as headless_err:
+                        raise Exception(f"Todos os métodos de conexão falharam. Último erro: {headless_err}")
         
-        await asyncio.sleep(5) # Delay de respiro final
+        # ═══ FASE 3: OBTER ABA / PÁGINA ═══
+        if is_cdp:
+            context = browser.contexts[0]
+            # Procura por uma aba do morada.ai existente para reaproveitar
+            page = next((pt for pt in context.pages if 'morada.ai' in pt.url), None)
+            
+            # Se não encontrar, procura por uma aba do login/autorização do morada
+            if not page:
+                page = next((pt for pt in context.pages if 'id.morada.ai' in pt.url or 'auth.morada.ai' in pt.url), None)
+                
+            # Se ainda não encontrar, procura por uma aba "about:blank" ou similar em branco para reaproveitar
+            if not page:
+                page = next((pt for pt in context.pages if 'about:blank' in pt.url or pt.url == ''), None)
+                
+            # Se não houver absolutamente nenhuma aba utilizável, cria uma nova
+            if not page:
+                page = await context.new_page()
+        else:
+            context = await browser.new_context()
+            page = await context.new_page()
+            
+        # Somente navega se não estivermos já na página certa ou na página de login do morada
+        current_url = page.url
+        if 'conversations' not in current_url and 'morada.ai' not in current_url:
+            try:
+                diag_print(f"🌐 Navegando aba existente ({current_url}) para conversations...")
+                await page.goto("https://app.morada.ai/conversations", timeout=60000, wait_until="domcontentloaded")
+                await page.bring_to_front()
+            except Exception as goto_err:
+                diag_print(f"⚠️ Erro ao navegar para conversations: {goto_err}")
+        else:
+            diag_print(f"🌐 Aba reaproveitada já está em URL do Morada: {current_url}")
+            try:
+                await page.bring_to_front()
+            except:
+                pass
+            
+        # Se for modo headless e tivermos credenciais, tenta login automático
+        if not is_cdp and morada_login and morada_pass and morada_login != "your_login_here":
+            diag_print(f"🔐 Modo headless: Tentando login automático com {morada_login}...")
+            await asyncio.sleep(3)
+            try:
+                email_input = await page.wait_for_selector('input[type="email"], input[name="email"], input[placeholder*="email" i]', timeout=10000)
+                if email_input:
+                    await email_input.fill(morada_login)
+                    pass_input = await page.query_selector('input[type="password"]')
+                    if pass_input:
+                        await pass_input.fill(morada_pass)
+                        submit_btn = await page.query_selector('button[type="submit"], button:has-text("Entrar"), button:has-text("Login")')
+                        if submit_btn:
+                            await submit_btn.click()
+                            await asyncio.sleep(5)
+                            await page.goto("https://app.morada.ai/conversations", timeout=60000, wait_until="domcontentloaded")
+                            diag_print("✅ Login automático realizado.")
+            except Exception as login_err:
+                diag_print(f"⚠️ Login automático falhou: {login_err}")
+                
+        await asyncio.sleep(3)
+        
+        # ═══ AGUARDA LOGIN SE NECESSÁRIO (até 3 minutos) ═══
+        try:
+            cur_url = page.url
+            diag_print(f"🌐 URL atual após conexão: {cur_url}")
+            if 'morada.ai' in cur_url and '/conversations' not in cur_url:
+                diag_print(f"🔐 Login necessário. Aguardando o usuário fazer login no navegador (até 3 min)...")
+                
+                # Foca a página para que o usuário veja
+                if is_cdp:
+                    try:
+                        await page.bring_to_front()
+                    except:
+                        pass
+                
+                login_success = False
+                for check_idx in range(60):  # 60 tentativas * 3s = 180s (3 minutos)
+                    await asyncio.sleep(3)
+                    try:
+                        current_url = page.url
+                        if '/conversations' in current_url:
+                            diag_print(f"✅ Login concluído detectado! URL: {current_url}")
+                            login_success = True
+                            break
+                    except Exception as check_url_err:
+                        diag_print(f"⚠️ Erro ao checar URL de login: {check_url_err}")
+                        
+                if not login_success:
+                    diag_print("⚠️ Timeout de 3 minutos sem login concluído. Prosseguindo de qualquer forma...")
+                else:
+                    await asyncio.sleep(3)
+                    diag_print("✅ Iniciando varredura...")
+            elif '/conversations' in cur_url:
+                diag_print("✅ Já na página de conversas. Prosseguindo...")
+        except Exception as login_wait_err:
+            diag_print(f"⚠️ Erro no processo de aguardar login: {login_wait_err}")
         
         # ═══ ABRE A DASHBOARD DO SENTINELA SE NÃO ESTIVER ABERTA ═══
         if dashboard_url and context:
@@ -407,8 +530,11 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                 diag_print(f"📊 ⚠️ Não foi possível abrir a dashboard: {dash_err}")
         
         # Volta o foco para a página do Morada para o scan
-        await page.bring_to_front()
-        await page.evaluate(AURA_JS)
+        try:
+            await page.bring_to_front()
+            await page.evaluate(AURA_JS)
+        except Exception:
+            pass
         
         diag_print(f"Página carregada: {page.url}")
         
@@ -544,10 +670,6 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                        # Persistência — isolada por usuario (com deduplicação global)
                        db = safe_read_json(user_auditorias_file, {"auditores": []})
                        
-                       # Historico preservado nas sessões anteriores para não prejudicar os relatórios.
-                       # A deduplicação global é feita no frontend no momento da exibição.
-                       
-                       # Adiciona/atualiza na sessão atual
                        sess_idx = next((i for i, s in enumerate(db["auditores"]) if s.get('id') == scan_id), -1)
                        if sess_idx == -1:
                             db["auditores"].append({"id": scan_id, "leads": []})
@@ -557,19 +679,54 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                        db["auditores"][sess_idx]["leads"].append(analysis)
                        safe_write_json(user_auditorias_file, db)
                        
+                       # ═══ SYNC IMEDIATO PARA A NUVEM ═══
+                       try:
+                           import firebase_db
+                           firebase_db.sync_leads_to_firebase([analysis])
+                       except Exception as fb_err:
+                           diag_print(f"⚠️ Sync Firebase por lead falhou: {fb_err}")
+                       
                        cl = (analysis.get('classificacao','') or 'Atenção').lower()
                        st = 'success' if 'saud' in cl else 'critico' if 'crit' in cl else 'atencao'
-                       await page.evaluate(f"window.updateSentinelaAura('{st}', '{header_name} OK')")
+                       try:
+                           await page.evaluate(f"window.updateSentinelaAura('{st}', '{header_name} OK')")
+                       except Exception:
+                           pass
                        
                        # Delay entre análises para respeitar rate-limits
                        await asyncio.sleep(3)
                        
                   except Exception as e:
-                       diag_print(f"Erro em {name}: {e}")
-                       continue
+                        err_msg = str(e)
+                        err_type = type(e).__name__
+                        diag_print(f"Erro em {name} ({err_type}): {e}")
+                        if 'TargetClosed' in err_type or 'TargetClosed' in err_msg or ('closed' in err_msg.lower() and ('browser' in err_msg.lower() or 'page' in err_msg.lower() or 'target' in err_msg.lower())):
+                            diag_print(f"⚠️ Página fechada ao analisar '{name}'. Tentando recuperar página do Morada...")
+                            try:
+                                # Procura se há alguma página aberta no morada.ai
+                                recovered = next((pt for pt in context.pages if 'morada.ai' in pt.url), None) if context else None
+                                if recovered:
+                                    page = recovered
+                                    await page.bring_to_front()
+                                    diag_print("✅ Página do Morada recuperada! Continuando scan...")
+                                else:
+                                    if context:
+                                        page = await context.new_page()
+                                        await page.goto("https://app.morada.ai/conversations", timeout=60000, wait_until="domcontentloaded")
+                                        diag_print("✅ Nova aba do Morada aberta para continuar!")
+                                    else:
+                                        diag_print("❌ Contexto inexistente. Interrompendo scan.")
+                                        break_outer = True
+                                        break
+                            except Exception as recovery_err:
+                                diag_print(f"❌ Falha na recuperação de página: {recovery_err}. Encerrando scan.")
+                                break_outer = True
+                                break
+                        continue
 
              # Scroll do painel lateral de conversas
-             await page.evaluate("""() => {
+             try:
+                  await page.evaluate("""() => {
                  const containers = document.querySelectorAll('[class*="List"], [class*="sidebar"], [class*="conversations"], nav, aside');
                  let scrolled = false;
                  containers.forEach(c => {
@@ -580,6 +737,8 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                  });
                  if (!scrolled) window.scrollBy(0, 1000);
              }""")
+             except Exception:
+                  pass
              await asyncio.sleep(1.5)
              if not found_new:
                  no_new_count += 1
@@ -594,7 +753,10 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
         # ═══ RETRY DE LEADS COM ERRO ═══
         if failed_leads:
              diag_print(f"🔄 RETRY: {len(failed_leads)} leads falharam. Aguardando 60s antes de retentar...")
-             await page.evaluate("window.updateSentinelaAura('atencao', 'RETENTANDO LEADS COM ERRO...')")
+             try:
+                  await page.evaluate("window.updateSentinelaAura('atencao', 'RETENTANDO LEADS COM ERRO...')")
+             except Exception:
+                  pass
              await asyncio.sleep(60)  # Aguarda cooldown dos rate-limits
              
              for fl in failed_leads:
@@ -636,7 +798,10 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                        continue
 
         diag_print(f"Scan finalizado. Total leads processados: {len(seen)}")
-        await page.evaluate("window.updateSentinelaAura('success', 'CONCLUÍDO')")
+        try:
+            await page.evaluate("window.updateSentinelaAura('success', 'CONCLUÍDO')")
+        except Exception:
+            pass
         await asyncio.sleep(6)
         
         # Sincroniza com Firebase Nuvem

@@ -39,7 +39,7 @@
   "content_scripts": [
     {
       "matches": [
-        "https://app.morada.ai/conversations/*",
+        "https://app.morada.ai/*",
         "*://*.trycloudflare.com/*",
         "http://localhost/*",
         "http://127.0.0.1/*",

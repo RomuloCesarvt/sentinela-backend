@@ -1,3 +1,2 @@
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run chr(34) & "C:\Users\RomuloMeloMouraLeite\.gemini\antigravity\scratch\sentinela_ia_v2\SENTINELA_MASTER.bat" & chr(34), 0
-Set WshShell = Nothing
+WshShell.Run "powershell.exe -ExecutionPolicy Bypass -File C:\Users\RomuloMeloMouraLeite\.gemini\antigravity\scratch\sentinela_ia_v2\activate_sentinela.ps1", 0, True

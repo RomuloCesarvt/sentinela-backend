@@ -16,7 +16,7 @@ if (Test-Path $tunnelLog) { Remove-Item $tunnelLog }
 # Mata processos antigos
 Stop-Process -Name cloudflared -Force -ErrorAction SilentlyContinue
 
-Start-Process ".\cloudflared.exe" -ArgumentList "tunnel --url http://localhost:8000" -RedirectStandardOutput $tunnelLog -RedirectStandardError $tunnelLog -WindowStyle Hidden
+Start-Process "cloudflared" -ArgumentList "tunnel --url http://localhost:8000" -RedirectStandardOutput $tunnelLog -RedirectStandardError $tunnelLog -WindowStyle Hidden
 
 # 3. Aguardar e Capturar URL
 Write-Host "[3/4] Aguardando URL do Túnel..."

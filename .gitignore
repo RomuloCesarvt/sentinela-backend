@@ -1,14 +1,14 @@
-# Ambiente
-.env
-.env.local
-.env.*.local
+# Logs e temp
 *.log
+logs/
 
 # Dados sensíveis
 backend/data/users.json
 backend/data/config.json
 backend/data/auditorias*.json
 backend/data/dash_state*.json
+backend/firebase-key.json
+backend/.env
 
 # Compilação
 __pycache__/
@@ -39,6 +39,9 @@ yarn-error.log
 .next/
 out/
 .vercel
+frontend/.env.vercel
+frontend/.env.vercel.production
+frontend/.env.production.local
 
 # IDE
 .vscode/
@@ -60,3 +63,4 @@ backend_vfinal.log
 cloudflared.exe
 all_leads.json
 backend/data/robot_profile/
+backend/data/browser_profile/

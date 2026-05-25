@@ -29,17 +29,15 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
   const handleStatusChange = async (newStatus: string) => {
     setSaving(true);
     try {
-      const username = getUsername();
-      const res = await fetch(`/api/leads/${encodeURIComponent(lead.nome)}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ classificacao: newStatus, username }),
-      });
-      if (res.ok) {
-        setCurrentStatus(newStatus);
-        setShowStatusPicker(false);
-        if (onStatusChange) onStatusChange(lead.nome, newStatus);
-      }
+      const { db } = await import('../lib/firebase');
+      const { doc, updateDoc } = await import('firebase/firestore');
+      const docId = lead.nome.toLowerCase().trim().replace(/ /g, '_').replace(/\//g, '_');
+      const docRef = doc(db, 'leads', docId);
+      await updateDoc(docRef, { classificacao: newStatus });
+      
+      setCurrentStatus(newStatus);
+      setShowStatusPicker(false);
+      if (onStatusChange) onStatusChange(lead.nome, newStatus);
     } catch (e) {
       console.error('Erro ao atualizar status:', e);
     } finally {

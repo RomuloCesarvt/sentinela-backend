@@ -31,6 +31,7 @@ import firebase_db
 # Lock global para serializar execuções do scan recebidos pelo Firebase
 firebase_scan_lock = None
 
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = FastAPI(title="Sentinela IA API")
 CONFIG_FILE = os.path.join(DATA_DIR, "config.json")
@@ -259,7 +260,7 @@ def _apply_schedule(schedule: dict):
     async def scheduled_scan():
         print(f"[CRONOS] Iniciando varredura automática agendada às {hour_str}...")
         try:
-            await extract_morada_leads(period, None, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), username="Sistema")
+            await extract_morada_leads(period, None, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'), username="Sistema", force_headless=False)
         except Exception as e:
             print(f"[CRONOS] Erro na varredura agendada: {e}")
 
@@ -314,6 +315,28 @@ def delete_leads_route(username: str = None):
         safe_write_json(target, {"auditores": []})
         if target != AUDITORIAS_FILE:
             safe_write_json(AUDITORIAS_FILE, {"auditores": []})
+
+    # Deleta do Firebase Firestore
+    try:
+        db = firebase_db.get_db()
+        if db:
+            print("[FIREBASE] Limpando leads no Firestore...")
+            leads_ref = db.collection('leads')
+            docs = leads_ref.list_documents()
+            batch = db.batch()
+            count = 0
+            for doc in docs:
+                batch.delete(doc)
+                count += 1
+                if count >= 400:
+                    batch.commit()
+                    batch = db.batch()
+                    count = 0
+            if count > 0:
+                batch.commit()
+            print("[FIREBASE] Leads limpos no Firestore com sucesso!")
+    except Exception as e:
+        print(f"[FIREBASE] Erro ao limpar leads no Firestore: {e}")
     
     return {"status": "success"}
 
@@ -487,11 +510,64 @@ def health_check():
         "timestamp": datetime.now().isoformat()
     }
 
+def sync_tunnel_url_thread():
+    import time
+    import re
+    # Aguarda o túnel inicializar e gravar os arquivos de log/url
+    time.sleep(12)
+    url = None
+    
+    # 1. Lista de caminhos possíveis para arquivos de URL de túnel
+    url_files = ["logs/tunnel_backend_url.txt", "logs/tunnel_url.txt"]
+    for txt_path in url_files:
+        if url:
+            break
+        if os.path.exists(txt_path):
+            # Tenta decodificar usando diferentes encodings comuns (UTF-16LE com BOM, UTF-8 com BOM, UTF-8, etc.)
+            for encoding in ["utf-16", "utf-16le", "utf-16be", "utf-8-sig", "utf-8", "latin-1"]:
+                try:
+                    with open(txt_path, "r", encoding=encoding) as f:
+                        content = f.read().strip()
+                        cleaned = content.replace("\ufeff", "").strip()
+                        if cleaned and (cleaned.startswith("http://") or cleaned.startswith("https://")):
+                            url = cleaned
+                            print(f"[FIREBASE] URL do túnel lida de {txt_path} ({encoding}): {url}")
+                            break
+                except Exception:
+                    pass
+            
+    # 2. Se não encontrou em arquivos TXT, tenta extrair diretamente do log do cloudflared
+    if not url:
+        log_path = "logs/tunnel.log"
+        if os.path.exists(log_path):
+            try:
+                with open(log_path, "r", encoding="utf-8", errors="ignore") as f:
+                    content = f.read()
+                    matches = re.findall(r"https://[a-z0-9-]+\.trycloudflare\.com", content)
+                    if matches:
+                        url = matches[-1] # Pega a última URL gerada
+                        print(f"[FIREBASE] URL do túnel extraída de {log_path}: {url}")
+            except Exception as e:
+                print(f"Erro ao parsear {log_path}: {e}")
+                
+    if url:
+        try:
+            db = firebase_db.get_db()
+            if db:
+                db.collection('system').document('config').set({
+                    'backend_url': url
+                }, merge=True)
+                print(f"[FIREBASE] backend_url sincronizada no Firestore: {url}")
+        except Exception as e:
+            print(f"[FIREBASE] Erro ao salvar backend_url no Firestore: {e}")
 
 @app.on_event("startup")
 async def on_startup():
     global firebase_scan_lock
     firebase_scan_lock = asyncio.Lock()
+    
+    import threading
+    threading.Thread(target=sync_tunnel_url_thread, daemon=True).start()
     
     scheduler.start()
     # Carrega agendamento salvo no config.json e programa o robô automático
@@ -583,7 +659,7 @@ async def on_startup():
                                 firebase_db.update_system_lock(True, data['username'])
                                 
                                 try:
-                                    await extract_morada_leads(data["period"], None, scan_id, username=data["username"])
+                                    await extract_morada_leads(data["period"], None, scan_id, username=data["username"], force_headless=False)
                                     print(f"[SENTINELA] ✅ SCAN (FIREBASE) CONCLUÍDO")
                                     firebase_db.update_system_lock(False)
                                     
@@ -602,6 +678,40 @@ async def on_startup():
                                     change.document.reference.update({'status': 'completed'})
                                 
                         asyncio.run_coroutine_threadsafe(process_scan(), main_loop)
+
+                    elif doc.get('status') == 'pending' and doc.get('command') == 'clear':
+                        print(f"[FIREBASE] Comando de limpeza recebido: {doc_id}")
+                        change.document.reference.update({'status': 'processing'})
+                        try:
+                            import glob
+                            # 1. Limpa todos os arquivos JSON locais
+                            safe_write_json(AUDITORIAS_FILE, {"auditores": []})
+                            pattern = os.path.join(DATA_DIR, "auditorias_*.json")
+                            for filepath in glob.glob(pattern):
+                                safe_write_json(filepath, {"auditores": []})
+                            print("[FIREBASE] Arquivos JSON locais limpos!")
+
+                            # 2. Limpa leads no Firestore
+                            fdb = firebase_db.get_db()
+                            if fdb:
+                                leads_ref = fdb.collection('leads')
+                                docs_to_del = leads_ref.list_documents()
+                                batch = fdb.batch()
+                                count = 0
+                                for d in docs_to_del:
+                                    batch.delete(d)
+                                    count += 1
+                                    if count >= 400:
+                                        batch.commit()
+                                        batch = fdb.batch()
+                                        count = 0
+                                if count > 0:
+                                    batch.commit()
+                                print("[FIREBASE] Leads limpos no Firestore via comando!")
+                        except Exception as clear_err:
+                            print(f"[FIREBASE] Erro ao processar comando clear: {clear_err}")
+                        finally:
+                            change.document.reference.update({'status': 'completed'})
 
         col_query = db.collection('commands').where('status', '==', 'pending')
         col_query.on_snapshot(on_snapshot)

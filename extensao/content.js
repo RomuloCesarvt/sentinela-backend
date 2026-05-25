@@ -4,11 +4,7 @@
  */
 
 const IS_MORADA = window.location.href.includes('morada.ai');
-const IS_DASHBOARD = window.location.href.includes('trycloudflare') || 
-                     window.location.href.includes('localhost') || 
-                     window.location.href.includes('127.0.0.1') || 
-                     window.location.href.includes('vercel.app') ||
-                     (document.querySelector('meta[name="description"]')?.getAttribute('content')?.includes('Sentinela IA') || false);
+const IS_DASHBOARD = !IS_MORADA;
 
 // --- PROGRESS UI ---
 function updateProgress(current, total, name) {
@@ -113,11 +109,12 @@ async function startRobot() {
 if (IS_DASHBOARD) {
     document.documentElement.dataset.sentinelaExtension = "true";
     window.addEventListener('SENTINELA_SCAN_TRIGGER', (e) => {
-        const { username } = e.detail;
+        const { username, backendUrl } = e.detail;
         chrome.storage.local.set({ 
             needs_scan: true, 
             sentinela_user: username, 
-            sentinela_url: window.location.origin 
+            sentinela_url: backendUrl || window.location.origin,
+            sentinela_backend_url: backendUrl || window.location.origin
         }, () => {
             chrome.runtime.sendMessage({ action: "open_morada" });
         });
@@ -126,16 +123,34 @@ if (IS_DASHBOARD) {
 
 // --- EXECUTION (MORADA) ---
 if (IS_MORADA) {
-    chrome.storage.local.get(['needs_scan'], (res) => {
-        if (res.needs_scan) {
-            setTimeout(startRobot, 3000);
-        }
-    });
+    const initMorada = () => {
+        if (window.location.href.includes('/conversations')) {
+            chrome.storage.local.get(['needs_scan'], (res) => {
+                if (res.needs_scan) {
+                    setTimeout(startRobot, 3000);
+                }
+            });
 
-    // Injeção de botão manual
-    const b = document.createElement('button');
-    b.innerText = "ANALISAR COM SENTINELA";
-    b.style = "position:fixed; top:85px; right:20px; z-index:99999; background:#000; color:#00f2ff; border:1px solid #00f2ff; padding:10px 15px; border-radius:12px; font-weight:black; font-size:10px; cursor:pointer;";
-    b.onclick = async () => { b.innerText = "ENVIANDO..."; await extractAndSend(); b.innerText = "✓ ENVIADO!"; setTimeout(()=>b.innerText="ANALISAR COM SENTINELA", 2000); };
-    document.body.appendChild(b);
+            // Injeção de botão manual (evita duplicar)
+            if (!document.getElementById('btn-analisar-sentinela')) {
+                const b = document.createElement('button');
+                b.id = 'btn-analisar-sentinela';
+                b.innerText = "ANALISAR COM SENTINELA";
+                b.style = "position:fixed; top:85px; right:20px; z-index:99999; background:#000; color:#00f2ff; border:1px solid #00f2ff; padding:10px 15px; border-radius:12px; font-weight:black; font-size:10px; cursor:pointer;";
+                b.onclick = async () => { 
+                    b.innerText = "ENVIANDO..."; 
+                    await extractAndSend(); 
+                    b.innerText = "✓ ENVIADO!"; 
+                    setTimeout(() => b.innerText = "ANALISAR COM SENTINELA", 2000); 
+                };
+                document.body.appendChild(b);
+            }
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', initMorada);
+    } else {
+        initMorada();
+    }
 }

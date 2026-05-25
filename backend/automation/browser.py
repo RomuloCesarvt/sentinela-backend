@@ -515,19 +515,7 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
         except Exception as login_wait_err:
             diag_print(f"⚠️ Erro no processo de aguardar login: {login_wait_err}")
         
-        # ═══ ABRE A DASHBOARD DO SENTINELA SE NÃO ESTIVER ABERTA ═══
-        if dashboard_url and context:
-            try:
-                dash_already_open = any('vercel.app' in p.url or 'sentinela' in p.url.lower() for p in context.pages)
-                if not dash_already_open:
-                    diag_print(f"📊 Abrindo Dashboard Sentinela: {dashboard_url}")
-                    dash_page = await context.new_page()
-                    await dash_page.goto(dashboard_url, timeout=30000, wait_until="domcontentloaded")
-                    diag_print("📊 ✅ Dashboard Sentinela aberta com sucesso.")
-                else:
-                    diag_print("📊 Dashboard Sentinela já está aberta.")
-            except Exception as dash_err:
-                diag_print(f"📊 ⚠️ Não foi possível abrir a dashboard: {dash_err}")
+        # Dashboard Sentinela will not be opened automatically to avoid opening additional tabs or prompting for login.
         
         # Volta o foco para a página do Morada para o scan
         try:

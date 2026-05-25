@@ -72,6 +72,10 @@ def initialize_config():
     for env_key, cfg_key in env_map.items():
         env_val = os.getenv(env_key)
         if env_val:  # só substitui se a variável de ambiente estiver definida e não vazia
+            # Ignora placeholders comuns
+            val_lower = env_val.lower()
+            if any(p in val_lower for p in ["seu_", "sua_", "your_", "aqui", "here", "example", "placeholder"]):
+                continue
             new_config[cfg_key] = env_val
 
     # Garante que a chave 'schedule' existe com todos os campos necessários

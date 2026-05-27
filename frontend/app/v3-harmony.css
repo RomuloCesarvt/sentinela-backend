@@ -3,11 +3,46 @@
 
 @import "tailwindcss";
 
+/* ====== TEMA ESCURO (padrão) ====== */
 :root {
   --background: #030712;
+  --background-2: #0c0c0e;
+  --background-3: #111115;
   --foreground: #f8fafc;
+  --foreground-2: #94a3b8;
+  --foreground-3: #475569;
   --glass: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
+  --sidebar-bg: #030712;
+  --sidebar-border: rgba(255, 255, 255, 0.03);
+  --card-bg: rgba(255, 255, 255, 0.02);
+  --card-border: rgba(255, 255, 255, 0.06);
+  --scrollbar-track: #030712;
+  --scrollbar-thumb: rgba(59, 130, 246, 0.5);
+  --gradient-top: rgba(59, 130, 246, 0.1);
+  --logo-blend: lighten;
+  --logo-filter: none;
+}
+
+/* ====== TEMA CLARO (premium, não genérico) ====== */
+html.light {
+  --background: #f0f2f7;
+  --background-2: #ffffff;
+  --background-3: #f8fafc;
+  --foreground: #0f172a;
+  --foreground-2: #334155;
+  --foreground-3: #64748b;
+  --glass: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(0, 0, 0, 0.06);
+  --card-bg: rgba(0, 0, 0, 0.02);
+  --card-border: rgba(0, 0, 0, 0.07);
+  --scrollbar-track: #f0f2f7;
+  --scrollbar-thumb: rgba(59, 130, 246, 0.4);
+  --gradient-top: rgba(59, 130, 246, 0.07);
+  --logo-blend: multiply;
+  --logo-filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3));
 }
 
 @theme {
@@ -24,8 +59,9 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+  background-image: radial-gradient(circle at 50% 0%, var(--gradient-top) 0%, transparent 50%);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .glass-panel {
@@ -52,13 +88,20 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--scrollbar-track);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.5);
+  background: var(--scrollbar-thumb);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(59, 130, 246, 0.8);
+}
+
+/* Transições suaves globais para troca de tema */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 0.25s;
+  transition-timing-function: ease;
 }

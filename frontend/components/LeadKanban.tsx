@@ -14,6 +14,9 @@ type Lead = {
   telefone?: string;
   email?: string;
   origem?: string;
+  etapa?: string;
+  produtos?: string[];
+  acoes_ja_realizadas?: string;
 };
 
 export default function LeadKanban({ leads, activeFilter }: { leads: Lead[], activeFilter: string | null }) {

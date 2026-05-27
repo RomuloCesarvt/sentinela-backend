@@ -12,13 +12,39 @@ import {
   Shield,
   Menu,
   X,
+  Sun,
+  Moon,
 } from 'lucide-react';
+
+// Hook de tema — persiste em localStorage e aplica classe no <html>
+function useTheme() {
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('sentinela_theme') as 'dark' | 'light' | null;
+    const resolved = saved ?? 'dark';
+    setTheme(resolved);
+    document.documentElement.classList.toggle('light', resolved === 'light');
+  }, []);
+
+  const toggle = () => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('sentinela_theme', next);
+      document.documentElement.classList.toggle('light', next === 'light');
+      return next;
+    });
+  };
+
+  return { theme, toggle };
+}
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [user, setUser] = useState<{name?: string, role?: string, username?: string} | null>(null);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { theme, toggle } = useTheme();
 
   useEffect(() => {
     try {
@@ -60,6 +86,8 @@ export default function Sidebar() {
     window.location.href = '/login';
   };
 
+  const isLight = theme === 'light';
+
   return (
     <>
       {/* Mobile Menu Button */}
@@ -82,29 +110,50 @@ export default function Sidebar() {
       )}
 
       {/* Sidebar */}
-      <aside className={`
-        fixed top-0 left-0 h-screen bg-[#030712] border-r border-white/[0.03] flex flex-col 
-        transition-all duration-300 z-50
-        ${isMobile 
-          ? `w-64 transform ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}` 
-          : 'w-56 translate-x-0'
-        }
-      `}>
+      <aside
+        className={`
+          fixed top-0 left-0 h-screen flex flex-col 
+          transition-all duration-300 z-50
+          ${isMobile 
+            ? `w-64 transform ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}` 
+            : 'w-56 translate-x-0'
+          }
+        `}
+        style={{
+          backgroundColor: 'var(--sidebar-bg)',
+          borderRight: '1px solid var(--sidebar-border)',
+        }}
+      >
         <div className="p-6 pt-12 overflow-y-auto flex-1 flex flex-col">
           
-          {/* LOGO OFICIAL */}
-          <div className="flex flex-col items-center mb-16 p-2 group transition-all duration-500">
-             <div className="relative w-40 h-40">
-                 <img 
-                   src="/logo.png?v=official-nav-clean" 
-                   alt="Sentinela Master Logo" 
-                   className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
-                   style={{ mixBlendMode: 'lighten' }}
-                   onError={(e) => {
-                     (e.target as any).src = '/logo.png?v=' + Date.now();
-                   }}
-                 />
-             </div>
+          {/* LOGO — sem fundo quadrado, premium */}
+          <div className="flex flex-col items-center mb-12 group">
+            {/* Container com glow animado em vez de fundo sólido */}
+            <div className="relative flex items-center justify-center">
+              {/* Glow de fundo (só aparece no dark, some no light via opacidade) */}
+              <div
+                className="absolute inset-0 rounded-full blur-2xl transition-opacity duration-500"
+                style={{
+                  background: 'radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%)',
+                  opacity: isLight ? 0.5 : 1,
+                  transform: 'scale(1.3)',
+                }}
+              />
+              <img
+                src="/logo.png"
+                alt="Sentinela IA"
+                className="relative w-32 h-32 object-contain group-hover:scale-105 transition-transform duration-700"
+                style={{
+                  mixBlendMode: isLight ? 'multiply' : 'lighten',
+                  filter: isLight
+                    ? 'drop-shadow(0 4px 16px rgba(59,130,246,0.25))'
+                    : 'drop-shadow(0 0 20px rgba(0,200,255,0.3))',
+                }}
+                onError={(e) => {
+                  (e.target as any).src = '/logo.png?v=' + Date.now();
+                }}
+              />
+            </div>
           </div>
 
           <nav className="space-y-1 flex-1">
@@ -118,7 +167,9 @@ export default function Sidebar() {
                   className={`flex items-center gap-4 px-5 py-3 rounded-2xl transition-all duration-300 group ${
                     isActive 
                     ? 'bg-blue-600/10 text-blue-400 border border-blue-600/10' 
-                    : 'text-slate-500 hover:bg-white/5 hover:text-slate-200'
+                    : isLight
+                      ? 'text-slate-400 hover:bg-black/5 hover:text-slate-700'
+                      : 'text-slate-500 hover:bg-white/5 hover:text-slate-200'
                   }`}
                 >
                   <Icon size={18} className={`shrink-0 ${isActive ? 'text-blue-400 font-black' : 'group-hover:text-cyan-400'} transition-colors`} />
@@ -130,24 +181,91 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        <div className="p-6 pb-10 border-t border-white/[0.03]">
+        <div
+          className="p-6 pb-10"
+          style={{ borderTop: '1px solid var(--sidebar-border)' }}
+        >
+          {/* Theme Toggle — botão premium */}
+          <button
+            onClick={toggle}
+            title={isLight ? 'Mudar para tema escuro' : 'Mudar para tema claro'}
+            className="flex items-center gap-3 w-full px-4 py-2.5 rounded-2xl mb-4 transition-all duration-300 group border"
+            style={{
+              background: isLight
+                ? 'linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.06))'
+                : 'linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
+              borderColor: isLight ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.06)',
+            }}
+          >
+            {/* Track */}
+            <div
+              className="relative w-9 h-5 rounded-full transition-all duration-500 shrink-0"
+              style={{
+                background: isLight
+                  ? 'linear-gradient(135deg, #3b82f6, #8b5cf6)'
+                  : 'rgba(255,255,255,0.12)',
+                boxShadow: isLight ? '0 0 10px rgba(59,130,246,0.4)' : 'none',
+              }}
+            >
+              {/* Thumb */}
+              <div
+                className="absolute top-0.5 w-4 h-4 rounded-full transition-all duration-500 flex items-center justify-center"
+                style={{
+                  left: isLight ? 'calc(100% - 18px)' : '2px',
+                  background: isLight
+                    ? '#ffffff'
+                    : 'rgba(255,255,255,0.7)',
+                  boxShadow: isLight ? '0 1px 4px rgba(0,0,0,0.2)' : 'none',
+                }}
+              >
+                {isLight
+                  ? <Sun size={8} className="text-blue-500" />
+                  : <Moon size={8} className="text-slate-400" />
+                }
+              </div>
+            </div>
+
+            <div className="flex flex-col items-start min-w-0">
+              <span
+                className="text-[9px] font-black uppercase tracking-widest leading-none"
+                style={{ color: isLight ? '#3b82f6' : 'rgba(255,255,255,0.4)' }}
+              >
+                {isLight ? 'Modo Claro' : 'Modo Escuro'}
+              </span>
+              <span
+                className="text-[7px] font-bold mt-0.5 leading-none"
+                style={{ color: isLight ? '#94a3b8' : 'rgba(255,255,255,0.2)' }}
+              >
+                {isLight ? 'clique para escurecer' : 'clique para clarear'}
+              </span>
+            </div>
+          </button>
+
           {/* User Profile */}
           {user && (
-            <div className="mb-4 px-4 py-3 bg-white/[0.02] border border-white/5 rounded-2xl">
+            <div
+              className="mb-4 px-4 py-3 rounded-2xl"
+              style={{
+                background: 'var(--card-bg)',
+                border: '1px solid var(--card-border)',
+              }}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center shrink-0">
                   {user.role === 'admin' ? <Shield size={14} className="text-blue-400" /> : <Users size={14} className="text-emerald-400" />}
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[9px] font-black text-white truncate">{user.name || user.username}</span>
-                  <span className="text-[7px] font-bold text-slate-500 uppercase tracking-widest">{user.role === 'admin' ? 'Admin' : 'SDR'}</span>
+                  <span className="text-[9px] font-black truncate" style={{ color: 'var(--foreground)' }}>{user.name || user.username}</span>
+                  <span className="text-[7px] font-bold uppercase tracking-widest" style={{ color: 'var(--foreground-3)' }}>{user.role === 'admin' ? 'Admin' : 'SDR'}</span>
                 </div>
               </div>
             </div>
           )}
+
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-4 px-5 py-3 w-full text-slate-500 hover:text-red-400 hover:bg-red-400/5 rounded-2xl transition-all duration-300 group border border-transparent hover:border-red-500/10"
+            className="flex items-center gap-4 px-5 py-3 w-full hover:text-red-400 hover:bg-red-400/5 rounded-2xl transition-all duration-300 group border border-transparent hover:border-red-500/10"
+            style={{ color: 'var(--foreground-3)' }}
           >
             <LogOut size={18} className="shrink-0" />
             <span className="text-[10px] font-black uppercase tracking-[0.25em] hidden sm:inline">Sair</span>

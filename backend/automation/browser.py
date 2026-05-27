@@ -67,9 +67,16 @@ def safe_write_json(filepath, data):
 
 def clean_lead_name(raw):
     if not raw: return "Lead Desconhecido"
-    name = raw.split('\n')[0].strip()
-    name = re.split(r'[M•\:]', name)[0].strip()
-    name = re.split(r'\d+\s*(?:minuto|hora|dia|segundo|hoje|agora|ontem|mes|mês)', name, flags=re.IGNORECASE)[0].strip()
+    # Remove marcas comuns de tempo (ex: "menos de um minuto", "há 2 horas", "ontem", etc.)
+    name = raw.strip()
+    # Remove timestamps verbais sem números
+    name = re.split(r'\b(?:menos de um minuto|um minuto|cerca de|segundos|minutos|horas|dias|hoje|ontem|agora|ontem|mes|mês)\b', name, flags=re.IGNORECASE)[0].strip()
+    # Remove timestamps com números
+    name = re.split(r'\d+\s*(?:minuto|hora|dia|segundo|hoje|agora|ontem|mes|mês|min|seg|hr)', name, flags=re.IGNORECASE)[0].strip()
+    # Remove marcas de data no formato dd/dd ou dd/dd/dddd
+    name = re.split(r'\b\d{2}/\d{2}(?:/\d{4})?\b', name)[0].strip()
+    # Outros caracteres de corte
+    name = re.split(r'[•\:]', name)[0].strip()
     name = re.sub(r'^[•\d\s]+', '', name).strip()
     name = name.replace('...', '').strip()
     return name or "Lead"
@@ -211,14 +218,19 @@ def clean_message_history(raw_history: list, lead_name: str) -> list:
         if any(n in text_lower for n in noise):
             continue
             
-        # Retira labels puros soltos pra não sujar contexto
-        if len(text) < 40 and not ('?' in text or '!' in text or ':' in text):
-             if any(s in text_lower.split() for s in sdr_names) or text_lower in sdr_names:
-                  continue
-             if lead_name and lead_name.lower().split()[0] in text_lower.split():
-                  continue
-             if "cliente" in text_lower.split():
-                  continue
+        # Retira labels puros soltos pra não sujar contexto (como cabeçalhos de balão com o nome do remetente)
+        if len(text) < 40:
+             text_words = text_lower.split()
+             # Se for exatamente o nome do lead, de um SDR, ou palavra isolada "cliente" / "sistema" / "você" / "sdr"
+             if text_lower in sdr_names or (lead_name and text_lower == lead_name.lower()):
+                 continue
+             if len(text_words) == 1:
+                 if text_lower in sdr_names:
+                     continue
+                 if lead_name and text_lower == lead_name.lower().split()[0]:
+                     continue
+                 if text_lower in ["cliente", "sistema", "você", "sdr"]:
+                     continue
                   
         if sender == 'System':
              continue # Ignora banners e traços que ocupam a tela toda centralizados
@@ -254,25 +266,10 @@ def clean_message_history(raw_history: list, lead_name: str) -> list:
 
 
 def get_browser_paths():
-    """Retorna o executável e o diretório de perfil para Chrome ou Edge (preferindo Chrome)."""
+    """Retorna o executável e o diretório de perfil para Chrome ou Edge (preferindo Edge)."""
     profile_dir = os.path.join(DATA_DIR, "browser_profile")
     
-    # 1. Google Chrome paths
-    chrome_paths = [
-        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
-        r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
-        os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe")
-    ]
-    chrome_exe = next((cp for cp in chrome_paths if os.path.exists(cp)), None)
-    if chrome_exe:
-        return {
-            "type": "chrome",
-            "exe": chrome_exe,
-            "profile": profile_dir,
-            "process_name": "chrome.exe"
-        }
-        
-    # 2. Microsoft Edge fallback
+    # 1. Microsoft Edge paths
     edge_paths = [
         r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
         r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
@@ -285,6 +282,21 @@ def get_browser_paths():
             "exe": edge_exe,
             "profile": profile_dir,
             "process_name": "msedge.exe"
+        }
+        
+    # 2. Google Chrome fallback
+    chrome_paths = [
+        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+        r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+        os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe")
+    ]
+    chrome_exe = next((cp for cp in chrome_paths if os.path.exists(cp)), None)
+    if chrome_exe:
+        return {
+            "type": "chrome",
+            "exe": chrome_exe,
+            "profile": profile_dir,
+            "process_name": "chrome.exe"
         }
         
     return None
@@ -327,6 +339,132 @@ def kill_process_on_port(port: int):
                     subprocess.run(["kill", "-9", pid])
     except Exception as e:
         diag_print(f"⚠️ Erro ao tentar limpar a porta {port}: {e}")
+
+def get_lead_elapsed_hours(raw_text: str) -> float:
+    """Retorna o tempo estimado em horas decorrido desde a última mensagem do lead."""
+    if not raw_text or not raw_text.strip():
+        return -1.0
+    
+    raw_lower = raw_text.lower().strip()
+    
+    # 0. ISO datetime (YYYY-MM-DDTHH:MM[:SS][.sss][Z|+HH:MM|-HH:MM])
+    # Ocorre quando o <time datetime="..."> retorna o atributo em vez do texto legível
+    iso_match = re.search(r'(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})', raw_text)
+    if iso_match:
+        try:
+            year  = int(iso_match.group(1))
+            month = int(iso_match.group(2))
+            day   = int(iso_match.group(3))
+            hour  = int(iso_match.group(4))
+            minute = int(iso_match.group(5))
+            dt_naive = datetime(year, month, day, hour, minute)
+            
+            # Detecta offset de fuso horário (+HH:MM ou -HH:MM)
+            tz_match = re.search(r'([+-])(\d{2}):(\d{2})$', raw_text.strip())
+            if tz_match:
+                sign = 1 if tz_match.group(1) == '+' else -1
+                tz_offset_h = int(tz_match.group(2)) + int(tz_match.group(3)) / 60
+                # Converte para UTC: dt_utc = dt_naive - sign*offset
+                from datetime import timedelta
+                dt_utc = dt_naive - timedelta(hours=sign * tz_offset_h)
+                # Converte UTC para BRT (UTC-3): dt_local = dt_utc - 3h
+                dt_local = dt_utc + timedelta(hours=-3)
+            elif raw_text.rstrip().endswith('Z'):
+                # UTC: converte para BRT (UTC-3)
+                from datetime import timedelta
+                dt_local = dt_naive + timedelta(hours=-3)
+            else:
+                # Sem offset: assume já é local
+                dt_local = dt_naive
+            
+            now = datetime.now()
+            diff_h = (now - dt_local).total_seconds() / 3600.0
+            diag_print(f"🗓️ ISO datetime '{raw_text[:40]}' → {diff_h:.1f}h atrás")
+            return max(0.0, diff_h)
+        except Exception as e:
+            diag_print(f"⚠️ Falha ao parsear ISO datetime '{raw_text[:40]}': {e}")
+    
+    # Limpa o texto antes de parsear: remove prefixo comum "há " e "cerca de"
+    clean = re.sub(r'^(há\s+|ha\s+|cerca\s+de\s+|há\s+cerca\s+de\s+)', '', raw_lower).strip()
+    
+    # 1. Menos de um minuto, agora, segundos
+    if any(k in clean for k in ["agora", "menos de um minuto", "um minuto", "segundo"]):
+        return 0.0
+        
+    # 2. Minutos ("há 5 minutos", "3 min", "15 minutos")
+    min_match = re.search(r'(\d+)\s*(?:minutos?|min)\b', clean)
+    if min_match:
+        return float(min_match.group(1)) / 60.0
+        
+    # 3. Horas ("há 2 horas", "1h", "3 hr") — exclui sequências que parecem telefone (10+ dígitos antes do h)
+    hr_match = re.search(r'(?<!\d)(\d{1,3})\s*(?:horas?|hr|h)\b', clean)
+    if hr_match:
+        val = int(hr_match.group(1))
+        if val <= 720:  # Sanidade: no máximo 30 dias em horas
+            return float(val)
+        
+    # 4. Hoje
+    if "hoje" in clean:
+        return 12.0
+        
+    # 5. Ontem
+    if "ontem" in clean:
+        return 36.0
+        
+    # 6. Anteontem
+    if "anteontem" in clean:
+        return 60.0
+        
+    # 7. Dias ("há 3 dias", "5d")
+    day_match = re.search(r'(\d+)\s*(?:dias?|d)\b', clean)
+    if day_match:
+        val = int(day_match.group(1))
+        if val <= 365:  # Sanidade
+            return float(val) * 24.0
+    
+    # 8. Semanas ("há 2 semanas")
+    week_match = re.search(r'(\d+)\s*(?:semanas?)\b', clean)
+    if week_match:
+        return float(int(week_match.group(1))) * 168.0
+    
+    # 9. Meses ("há 1 mês", "2 meses")
+    month_match = re.search(r'(\d+)\s*(?:m[eê]s(?:es)?)\b', clean)
+    if month_match:
+        return float(int(month_match.group(1))) * 720.0
+        
+    # 10. Data dd/mm ou dd/mm/aaaa
+    date_match = re.search(r'\b(\d{1,2})/(\d{1,2})(?:/(\d{4}))?\b', clean)
+    if date_match:
+        try:
+            day_v = int(date_match.group(1))
+            month_v = int(date_match.group(2))
+            year_v = int(date_match.group(3)) if date_match.group(3) else datetime.now().year
+            card_date = datetime(year_v, month_v, day_v)
+            now = datetime.now()
+            diff_days = (now.date() - card_date.date()).days
+            if diff_days >= 0:
+                return float(diff_days * 24.0)
+        except Exception:
+            pass
+            
+    # 11. HH:MM isolado (ex: "14:30") — assume hoje ou ontem
+    time_match = re.search(r'(?:^|\s)(\d{1,2}):(\d{2})(?:\s|$)', clean)
+    if time_match:
+        try:
+            h = int(time_match.group(1))
+            m = int(time_match.group(2))
+            now = datetime.now()
+            msg_time = now.replace(hour=h, minute=m, second=0, microsecond=0)
+            diff = (now - msg_time).total_seconds() / 3600.0
+            if diff >= 0:
+                return diff
+            return diff + 24.0  # Horario de ontem
+        except Exception:
+            return 6.0
+        
+    # Se nada combinou, retorna -1 (timestamp desconhecido → incluir no scan por segurança)
+    diag_print(f"⚠️ Não foi possível interpretar timestamp: '{raw_text[:80]}'")
+    return -1.0
 
 async def extract_morada_leads(period: str = "24h", custom_range: dict = None, scan_id: str = None, username: str = None, force_headless: bool = False):
     if not scan_id: scan_id = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -439,6 +577,15 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                 page = await context.new_page()
         else:
             context = await browser.new_context()
+            # Se o navegador foi aberto agora pelo robô (nova instância separada),
+            # abrimos o dashboard do Sentinela e o Morada AI lado a lado no mesmo navegador
+            try:
+                dash_page = await context.new_page()
+                diag_print(f"🌐 Novo Navegador: Abrindo Dashboard do Sentinela em {dashboard_url}")
+                await dash_page.goto(dashboard_url, timeout=30000, wait_until="domcontentloaded")
+            except Exception as e:
+                diag_print(f"⚠️ Erro ao abrir Dashboard no novo navegador: {e}")
+                
             page = await context.new_page()
             
         # Somente navega se não estivermos já na página certa ou na página de login do morada
@@ -481,17 +628,23 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
         
         # ═══ AGUARDA LOGIN SE NECESSÁRIO (até 3 minutos) ═══
         try:
+            # Aguarda até que os leads sejam carregados ou a tela de login apareça (limite de 15 segundos)
+            diag_print("⏳ Aguardando carregamento da página (leads ou tela de login)...")
+            try:
+                await page.wait_for_selector('div[class*="ListItem"], a[href*="/conversations/"], input[type="email"], input[name="email"], input[placeholder*="email" i]', timeout=15000)
+            except Exception as wait_err:
+                diag_print(f"⚠️ Timeout ao aguardar carregamento inicial: {wait_err}. Verificando URL...")
+                
             cur_url = page.url
-            diag_print(f"🌐 URL atual após conexão: {cur_url}")
-            if 'morada.ai' in cur_url and '/conversations' not in cur_url:
+            diag_print(f"🌐 URL atual após carregamento: {cur_url}")
+            if '/conversations' not in cur_url:
                 diag_print(f"🔐 Login necessário. Aguardando o usuário fazer login no navegador (até 3 min)...")
                 
                 # Foca a página para que o usuário veja
-                if is_cdp:
-                    try:
-                        await page.bring_to_front()
-                    except:
-                        pass
+                try:
+                    await page.bring_to_front()
+                except:
+                    pass
                 
                 login_success = False
                 for check_idx in range(60):  # 60 tentativas * 3s = 180s (3 minutos)
@@ -500,17 +653,22 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                         current_url = page.url
                         if '/conversations' in current_url:
                             diag_print(f"✅ Login concluído detectado! URL: {current_url}")
+                            # Aguarda os leads carregarem na tela após o login
+                            try:
+                                await page.wait_for_selector('div[class*="ListItem"], a[href*="/conversations/"]', timeout=15000)
+                            except:
+                                pass
                             login_success = True
                             break
                     except Exception as check_url_err:
                         diag_print(f"⚠️ Erro ao checar URL de login: {check_url_err}")
                         
                 if not login_success:
-                    diag_print("⚠️ Timeout de 3 minutos sem login concluído. Prosseguindo de qualquer forma...")
+                    diag_print("⚠️ Timeout de 3 minutos sem login concluído. Prosseguindo...")
                 else:
-                    await asyncio.sleep(3)
-                    diag_print("✅ Iniciando varredura...")
-            elif '/conversations' in cur_url:
+                    await asyncio.sleep(5) # Cooldown pós-login
+                    diag_print("✅ Login realizado e leads carregados. Iniciando varredura...")
+            else:
                 diag_print("✅ Já na página de conversas. Prosseguindo...")
         except Exception as login_wait_err:
             diag_print(f"⚠️ Erro no processo de aguardar login: {login_wait_err}")
@@ -520,223 +678,445 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
         # Volta o foco para a página do Morada para o scan
         try:
             await page.bring_to_front()
+            # Não força viewport — preserva o layout padrão do Morada AI
             await page.evaluate(AURA_JS)
-        except Exception:
-            pass
+        except Exception as e:
+            diag_print(f"ℹ️ Não foi possível definir o tamanho do viewport: {e}")
         
         diag_print(f"Página carregada: {page.url}")
+        
+        # Garante que a lista de conversas está visível e carregada no DOM antes de começar a ler
+        try:
+            diag_print("⏳ Aguardando a lista de conversas carregar na tela...")
+            await page.wait_for_selector('div[class*="ListItem"], a[href*="/conversations/"]', timeout=30000)
+            # Dá um tempo curto de segurança para a lista renderizar e atualizar as informações do servidor
+            await asyncio.sleep(4)
+        except Exception as e:
+            diag_print(f"⚠️ Alerta: Timeout ao aguardar lista de conversas: {e}")
+        
+        # Alterna para a aba "Todas" ou "Conversas" se disponível no Morada AI
+        try:
+            diag_print("🔍 Verificando filtros de abas (Todas/Conversas) no Morada...")
+            tab_locator = page.locator('button, div, span, a, p').filter(has_text=re.compile(r'^(Todas|Todas as conversas|Conversas)$', re.IGNORECASE))
+            count = await tab_locator.count()
+            clicked_tab = False
+            for i in range(count):
+                el = tab_locator.nth(i)
+                text = await el.text_content()
+                text_clean = text.strip() if text else ""
+                if text_clean in ["Todas", "Todas as conversas", "Conversas"]:
+                    await el.click(force=True)
+                    diag_print(f"✅ Filtro/Aba '{text_clean}' clicado com sucesso!")
+                    clicked_tab = True
+                    await asyncio.sleep(4) # Cooldown para carregar a nova lista
+                    break
+            if not clicked_tab:
+                diag_print("ℹ️ Nenhuma aba com texto 'Todas', 'Todas as conversas' ou 'Conversas' necessitou de clique.")
+        except Exception as tab_err:
+            diag_print(f"⚠️ Erro ao tentar mudar para aba 'Todas': {tab_err}")
         
         seen = set()
         failed_leads = []
         no_new_count = 0
-        for scroll_iter in range(50):
+        total_analyzed = 0
+        total_skipped_period = 0
+        total_old_leads_seen = 0  # apenas para log/diagnóstico, NÃO para parar o scan
+        
+        diag_print(f"📋 Iniciando varredura de leads — Período: {period}")
+        
+        # O loop roda enquanto encontrar leads novos ou ate atingir limite de iteracoes
+        for scroll_iter in range(150):
+             # Re-busca a lista de elementos toda vez para evitar "Element is not attached to the DOM"
              leads = await page.query_selector_all('div[class*="ListItem"], a[href*="/conversations/"]')
-             found_new = False
-             break_outer = False
+             
+             target_lead = None
              for el in leads:
                   try:
+                       # Extrai o nome do lead direto do span do card para ser limpo desde o início
+                       name = await el.evaluate("""(node) => {
+                           const nameSpan = node.querySelector('.rt-Text.rt-r-weight-bold, span[class*="weight-bold"]');
+                           return nameSpan ? nameSpan.textContent.trim() : "";
+                       }""")
                        raw = await el.text_content()
-                       if not raw: continue
-                       name = clean_lead_name(raw)
-                       if name in seen or len(name) < 2: continue
-                       seen.add(name)
-                       found_new = True
+                       if not name:
+                           name = clean_lead_name(raw)
+                           
+                       if name not in seen and len(name) >= 2:
+                            target_lead = (name, raw, el)
+                            break
+                  except Exception:
+                       continue
                        
-                       # Filtro 24h Categórico (Bloqueio Estrutural)
-                       if period == "24h":
-                            raw_lower = raw.lower()
-                            
-                            # Indicadores de que o card pertence a HOJE ou ONTEM
-                            is_today_or_yesterday = bool(re.search(r'\b(hoje|agora|ontem|min\w*|seg\w*|\d{1,2}:\d{2})\b', raw_lower))
-                            
-                            # Indicadores de que o card pertence a um PASSADO mais distante
-                            is_past = bool(re.search(r'\b(anteontem|\d{2}/\d{2}|\d{2}/\d{2}/\d{4})\b', raw_lower))
-                            
-                            if is_past and not is_today_or_yesterday:
-                                # Como a lista do Morada é cronológica, ao achar leads mais antigos que ontem,
-                                # nós DEBEMOS INTERROMPER A VARREDURA para não ler a fila de meses atrás.
-                                diag_print(f"Limiar de 24h atingido no lead: {name}. Parando varredura.")
-                                break_outer = True
-                                break
-
-                       await page.evaluate(f"window.updateSentinelaAura('scanning', 'Analisando: {name}')")
-                       await el.click(force=True)
-                       await asyncio.sleep(1.5) 
-                       
-                       # Nome Limpo (Header)
-                       header_name = await page.evaluate("""() => {
-                            const h2 = document.querySelector('header h2, [class*="Header"] h2, h2.font-black');
-                            if (!h2) return "";
-                            let text = Array.from(h2.childNodes)
-                                .filter(n => n.nodeType === 3)
-                                .map(n => n.textContent)
-                                .join(" ").trim();
-                            return text.split(/[M•0-9]/)[0].trim();
-                       }""")
-                       header_name = header_name or name
-                       diag_print(f"Auditando: {header_name}")
-
-                       # Extrair URL da conversa do Morada
-                       lead_url = await page.evaluate("window.location.href")
-
-                       # Scroll do chat para carregar histórico completo
-                       scroll_selector = '.rt-Flex.overflow-y-auto.rt-r-fd-column-reverse'
-                       await page.evaluate("""async (sel) => {
-                            const chat = document.querySelector(sel);
-                            if (!chat) return;
-                            chat.click();
-                            let lastCount = 0;
-                            for (let i = 0; i < 20; i++) {
-                                 chat.scrollBy(0, -10000);
-                                 await new Promise(r => setTimeout(r, 600));
-                                 let currCount = chat.querySelectorAll('div[class*="bubble" i], [class*="message" i]').length;
-                                 if (currCount === lastCount && i > 3) break; 
-                                 lastCount = currCount;
+             if not target_lead:
+                  # Faz scroll para carregar mais leads se nao achou nenhum novo
+                  try:
+                        await page.evaluate("""() => {
+                            // 1. Abordagem mais confiável para listas lazy-load: 
+                            // Rola o último elemento da lista para a visão
+                            const items = document.querySelectorAll('div[class*="ListItem"], a[href*="/conversations/"]');
+                            if (items && items.length > 0) {
+                                const lastItem = items[items.length - 1];
+                                lastItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                                
+                                // Tenta empurrar o scroll do parent diretamente como garantia extra
+                                let parent = lastItem.parentElement;
+                                while (parent && parent !== document.body) {
+                                    if (parent.scrollHeight > parent.clientHeight) {
+                                        parent.scrollBy(0, 1000);
+                                        return;
+                                    }
+                                    parent = parent.parentElement;
+                                }
                             }
-                       }""", scroll_selector)
-
-                       # EXTRAÇÃO DE DADOS MESTRE DO LEAD (Telefone, E-mail, Origem)
-                       lead_data = await page.evaluate("""() => {
-                            const data = { telefone: '', email: '', origem: '' };
-                            const text = document.body.innerText || "";
                             
-                            // Regex Telefone (ex: 5514991036023)
-                            const phoneMatch = text.match(/55\\d{10,11}/);
-                            if (phoneMatch) data.telefone = phoneMatch[0];
-                            
-                            // Regex Email
-                            const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g) || [];
-                            const validEmails = emails.filter(e => !e.includes('morada.ai') && !e.includes('sentry.io'));
-                            if (validEmails.length > 0) data.email = validEmails[0];
-                            
-                            // Regex Origem
-                            const originMatch = text.match(/Origem do Neg[ó][c]io:[\\s\\n]*([A-Za-zÀ-ÿ\\s]+)/i) || text.match(/Origem do Negocio:[\\s\\n]*([A-Za-zÀ-ÿ\\s]+)/i);
-                            if (originMatch) {
-                                data.origem = originMatch[1].replace('Ações rápidas', '').trim();
-                            }
-                            return data;
-                       }""")
-
-                       # CAPTURA V7.0 — Detecção Fiel ao Morada AI
-                       raw_history = await page.evaluate(CAPTURE_MESSAGES_JS, header_name)
-                        
-                       if not raw_history: continue
-
-                       # ═══ PÓS-PROCESSAMENTO: Limpa labels, duplicatas, corrige remetentes ═══
-                       history_data = clean_message_history(raw_history, header_name)
-                       diag_print(f"  -> {header_name}: {len(raw_history)} raw -> {len(history_data)} limpos")
-                        
-                       if not history_data: continue
-
-                       # AI Context Sync - Injeta TODAS as chaves disponíveis
-                       config_data = get_config()
-                       key = config_data.get("openai_key")
-                       if key: os.environ["OPENAI_API_KEY"] = key
-                       groq_key = config_data.get("groq_key")
-                       if groq_key: os.environ["GROQ_API_KEY"] = groq_key
-                       gemini_key = config_data.get("gemini_key")
-                       if gemini_key: os.environ["GEMINI_API_KEY"] = gemini_key
-
-                       analysis = await analyze_lead_conversation({"history": history_data, "sdr": "Moura Leite Operação"})
-                       analysis['nome'] = header_name
-                       analysis['raw_messages'] = history_data
-                       analysis['timestamp'] = datetime.now().isoformat()
-                       analysis['url_morada'] = lead_url
-                       analysis['telefone'] = lead_data.get('telefone', '')
-                       analysis['email'] = lead_data.get('email', '')
-                       analysis['origem'] = lead_data.get('origem', '')
-                       
-                       # Track leads que falharam para retry posterior
-                       if analysis.get('_needs_retry'):
-                           failed_leads.append({"name": header_name, "history": history_data, "url": lead_url})
-                           diag_print(f"!️ {header_name} marcado para retry posterior")
-                       
-                       # Remove flag interna antes de salvar
-                       analysis.pop('_needs_retry', None)
-                       analysis.pop('_provider', None)
-                       
-                       # Persistência — isolada por usuario (com deduplicação global)
-                       db = safe_read_json(user_auditorias_file, {"auditores": []})
-                       
-                       sess_idx = next((i for i, s in enumerate(db["auditores"]) if s.get('id') == scan_id), -1)
-                       if sess_idx == -1:
-                            db["auditores"].append({"id": scan_id, "leads": []})
-                            sess_idx = len(db["auditores"]) - 1
-                       
-                       db["auditores"][sess_idx]["leads"] = [l for l in db["auditores"][sess_idx]["leads"] if (l.get('nome') or '').lower().strip() != header_name.lower().strip()]
-                       db["auditores"][sess_idx]["leads"].append(analysis)
-                       safe_write_json(user_auditorias_file, db)
-                       
-                       # ═══ SYNC IMEDIATO PARA A NUVEM ═══
-                       try:
-                           import firebase_db
-                           firebase_db.sync_leads_to_firebase([analysis])
-                       except Exception as fb_err:
-                           diag_print(f"⚠️ Sync Firebase por lead falhou: {fb_err}")
-                       
-                       cl = (analysis.get('classificacao','') or 'Atenção').lower()
-                       st = 'success' if 'saud' in cl else 'critico' if 'crit' in cl else 'atencao'
-                       try:
-                           await page.evaluate(f"window.updateSentinelaAura('{st}', '{header_name} OK')")
-                       except Exception:
-                           pass
-                       
-                       # Delay entre análises para respeitar rate-limits
-                       await asyncio.sleep(3)
-                       
-                  except Exception as e:
-                        err_msg = str(e)
-                        err_type = type(e).__name__
-                        diag_print(f"Erro em {name} ({err_type}): {e}")
-                        if 'TargetClosed' in err_type or 'TargetClosed' in err_msg or ('closed' in err_msg.lower() and ('browser' in err_msg.lower() or 'page' in err_msg.lower() or 'target' in err_msg.lower())):
-                            diag_print(f"⚠️ Página fechada ao analisar '{name}'. Tentando recuperar página do Morada...")
-                            try:
-                                # Procura se há alguma página aberta no morada.ai
-                                recovered = next((pt for pt in context.pages if 'morada.ai' in pt.url), None) if context else None
-                                if recovered:
-                                    page = recovered
-                                    await page.bring_to_front()
-                                    diag_print("✅ Página do Morada recuperada! Continuando scan...")
-                                else:
-                                    if context:
-                                        page = await context.new_page()
-                                        await page.goto("https://app.morada.ai/conversations", timeout=60000, wait_until="domcontentloaded")
-                                        diag_print("✅ Nova aba do Morada aberta para continuar!")
-                                    else:
-                                        diag_print("❌ Contexto inexistente. Interrompendo scan.")
-                                        break_outer = True
-                                        break
-                            except Exception as recovery_err:
-                                diag_print(f"❌ Falha na recuperação de página: {recovery_err}. Encerrando scan.")
-                                break_outer = True
-                                break
-                        continue
-
-             # Scroll do painel lateral de conversas
+                            // 2. Fallback para viewports comuns do Radix e outros layouts
+                            const containers = document.querySelectorAll('.rt-ScrollAreaViewport, [class*="ScrollAreaViewport"], [class*="viewport"], [class*="List"], [class*="sidebar"], [class*="conversations"], nav, aside');
+                            let scrolled = false;
+                            containers.forEach(c => {
+                                if (c.scrollHeight > c.clientHeight && c.clientHeight > 200) {
+                                    c.scrollBy(0, 1000);
+                                    scrolled = true;
+                                }
+                            });
+                            if (!scrolled) window.scrollBy(0, 1000);
+                        }""")
+                  except Exception:
+                       pass
+                  await asyncio.sleep(2.0)
+                  no_new_count += 1
+                  if no_new_count >= 8:
+                       diag_print(f"Nenhum lead novo encontrado após 8 scrolls. Finalizando varredura. (Analisados: {total_analyzed}, Fora do período: {total_skipped_period})")
+                       break
+                  diag_print(f"📜 Scroll #{no_new_count}/8 — buscando mais leads... ({len(seen)} vistos até agora)")
+                  continue
+             
+             # Se encontrou um lead novo, reseta contador de scrolls vazios e processa ele
+             no_new_count = 0
+             name, raw, el = target_lead
+             seen.add(name)
+             
              try:
-                  await page.evaluate("""() => {
-                 const containers = document.querySelectorAll('[class*="List"], [class*="sidebar"], [class*="conversations"], nav, aside');
-                 let scrolled = false;
-                 containers.forEach(c => {
-                     if (c.scrollHeight > c.clientHeight && c.clientHeight > 200) {
-                         c.scrollBy(0, 800);
-                         scrolled = true;
-                     }
-                 });
-                 if (!scrolled) window.scrollBy(0, 1000);
-             }""")
-             except Exception:
-                  pass
-             await asyncio.sleep(1.5)
-             if not found_new:
-                 no_new_count += 1
-                 if no_new_count >= 3: break
-             else:
-                 no_new_count = 0
-                 
-             if break_outer:
-                 diag_print("Varredura interrompida corretamente no limite do filtro cronológico.")
-                 break
+                  # Extrai o timestamp do card com preferência por texto legível humano
+                  # Usa r"" (raw string) para evitar que o Python processe \s ou \d incorretamente
+                  card_time_text = await el.evaluate(r"""(node) => {
+                      // Estratégia 1: Elemento <time> — prefere textContent legível ("6 dias", "cerca de 17 horas")
+                      // e só usa o atributo datetime como último recurso (evita strings ISO que Python não parseia)
+                      const timeEl = node.querySelector('time');
+                      if (timeEl) {
+                          const humanText = timeEl.textContent.trim();
+                          if (humanText && humanText.length >= 2) return humanText;
+                          // Tenta o title (algumas plataformas colocam texto legivel aqui)
+                          const title = timeEl.getAttribute('title');
+                          if (title && title.length >= 2) return title;
+                          // Último recurso: datetime attribute (ISO — Python vai tentar parsear)
+                          const dt = timeEl.getAttribute('datetime');
+                          if (dt) return dt;
+                      }
+                      
+                      // Estratégia 2: Spans/divs cujo texto parece um timestamp legível
+                      // Padrão expandido para cobrir "cerca de X horas", "há X dias", etc.
+                      const timeRegex = /^(?:h[aá]\s+)?(?:cerca\s+de\s+)?(?:\d{1,2}:\d{2}|agora|ontem|anteontem|\d{1,3}\s*(?:minutos?|segundos?|horas?|dias?|semanas?|m[eê]s(?:es)?|min|seg|hr|h|d|dia)|menos de um minuto|um minuto|segundos|minutos|horas|dias|\d{1,2}\/\d{1,2}(?:\/\d{4})?)$/i;
+                      const elements = node.querySelectorAll('time, span, div, p, small');
+                      for (let child of elements) {
+                          const text = child.textContent.trim();
+                          if (text.length > 0 && text.length < 60 && timeRegex.test(text)) {
+                              return text;
+                          }
+                      }
+                      
+                      // Estratégia 3: Busca parcial por padrões de tempo dentro de textos maiores
+                      const partialTimeRegex = /(?:h[aá]\s+(?:cerca\s+de\s+)?\d+\s*(?:min|hora|dia|seg|semana|m[eê]s)|cerca\s+de\s+\d+\s*(?:min|hora|dia)|\d{1,2}:\d{2}|agora|ontem|anteontem|menos de um minuto)/i;
+                      for (let child of elements) {
+                          const text = child.textContent.trim();
+                          if (text.length > 0 && text.length < 100) {
+                              const match = text.match(partialTimeRegex);
+                              if (match) return match[0];
+                          }
+                      }
+                      
+                      // Estratégia 4 (Último recurso): retorna vazio para sinalizar incerteza
+                      return "";
+                  }""")
+                  
+                  # Filtro Dinâmico de Período (com auto-parada cronológica baseada em horas decorridas)
+                  lead_elapsed_hours = get_lead_elapsed_hours(card_time_text)
+                  period_limits = {
+                      "2h": 2.0,
+                      "12h": 12.0,
+                      "24h": 36.0,  # 36 horas para garantir cobertura total de "ontem"
+                      "7d": 168.0,  # 7 dias
+                      "30d": 720.0  # 30 dias
+                  }
+                  max_allowed_hours = period_limits.get(period, 36.0)
+                  
+                  # Log de diagnóstico por lead: mostra o que foi extraído e a decisão
+                  diag_print(f"🕐 Lead '{name}' | timestamp_bruto='{card_time_text[:50]}' | horas={lead_elapsed_hours:.1f} | limite={max_allowed_hours}h | período={period}")
+
+                  # Se não foi possível determinar a idade (retornou -1), INCLUI o lead no scan
+                  # para não perder nenhum lead por falha de parsing do timestamp
+                  if lead_elapsed_hours < 0:
+                      diag_print(f"⚠️ Lead '{name}': timestamp incerto ('{card_time_text[:40]}'). Incluindo no scan por segurança.")
+                  elif lead_elapsed_hours > max_allowed_hours:
+                      # Lead fora do período: apenas pula (registra para log) mas CONTINUA o scan.
+                      # A lista do Morada AI NÃO é estritamente cronológica — pode haver leads recentes
+                      # abaixo de leads antigos. Por isso NUNCA paramos por leads antigos consecutivos;
+                      # varremos TODOS os leads visíveis e só paramos quando o DOM não retornar novos.
+                      total_old_leads_seen += 1
+                      total_skipped_period += 1
+                      diag_print(f"⏭️ Lead '{name}' fora do período '{period}' ({lead_elapsed_hours:.1f}h > {max_allowed_hours}h). Pulando [{total_old_leads_seen} fora do período até agora]...")
+                      continue
+
+                  await page.evaluate(f"window.updateSentinelaAura('scanning', 'Analisando: {name}')")
+                  # Clica usando locator dinâmico e resiliente a DOM re-renders (evita "Element is not attached to the DOM")
+                  el_locator = page.locator('div[class*="ListItem"], a[href*="/conversations/"]').filter(has_text=name).first
+                  await el_locator.click(force=True)
+                  await asyncio.sleep(1.5) 
+                  
+                  # Nome Limpo (Header)
+                  header_name = await page.evaluate("""() => {
+                        const h2s = document.querySelectorAll('h2');
+                        for (let h of h2s) {
+                            const text = h.innerText.trim();
+                            if (text && text !== 'Caixa de entrada' && text !== 'Insights') {
+                                return text.split('\\n')[0].trim();
+                            }
+                        }
+                        return "";
+                  }""")
+                  header_name = header_name or name
+                  diag_print(f"Auditando: {header_name}")
+
+                  # Extrair URL da conversa do Morada
+                  lead_url = await page.evaluate("window.location.href")
+
+                  # Scroll do chat para carregar historico completo
+                  scroll_selector = '.rt-Flex.overflow-y-auto.rt-r-fd-column-reverse'
+                  await page.evaluate("""async (sel) => {
+                        // 1. Encontra o container flex do chat que contém as mensagens
+                        const chatFlex = document.querySelector(sel);
+                        if (!chatFlex) return;
+                        
+                        // 2. Encontra o ancestral que realmente possui a barra de rolagem (overflowY)
+                        let chatContainer = chatFlex;
+                        while (chatContainer && chatContainer !== document.body) {
+                             const style = window.getComputedStyle(chatContainer);
+                             if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && chatContainer.scrollHeight > chatContainer.clientHeight) {
+                                  break;
+                             }
+                             chatContainer = chatContainer.parentElement;
+                        }
+                        
+                        if (!chatContainer) chatContainer = chatFlex; // Fallback
+                        
+                        chatContainer.click();
+                        let lastCount = 0;
+                        
+                        for (let i = 0; i < 25; i++) {
+                             const oldScrollHeight = chatContainer.scrollHeight;
+                             
+                             // Scroll para cima (tenta todas as convenções de scroll para compatibilidade)
+                             chatContainer.scrollTop = 0; 
+                             chatContainer.scrollBy(0, -10000);
+                             chatContainer.scrollTop = -10000;
+                             
+                             await new Promise(r => setTimeout(r, 800));
+                             
+                             // Conta quantas mensagens/balões existem no chat
+                             let currCount = chatFlex.querySelectorAll('div[class*="bubble" i], [class*="message" i], [class*="ChatItem" i], [class*="ListItem" i]').length;
+                             if (currCount === lastCount && i > 3) {
+                                  // Se a contagem não mudou e o scrollHeight também não mudou, terminamos de rolar
+                                  if (chatContainer.scrollHeight === oldScrollHeight) {
+                                       break;
+                                  }
+                             }
+                             lastCount = currCount;
+                        }
+                  }""", scroll_selector)
+
+                  # EXTRAÇÃO DE DADOS MESTRE DO LEAD (Telefone, E-mail, Origem, Etapa, Produtos, Responsável)
+                  lead_data = await page.evaluate("""() => {
+                       const data = { 
+                           telefone: '', 
+                           email: '', 
+                           origem: '',
+                           etapa: '',
+                           produtos: [],
+                           responsavel: ''
+                       };
+                       const text = document.body.innerText || "";
+                       
+                       // Regex Telefone (ex: 5514991036023)
+                       const phoneMatch = text.match(/55\\d{10,11}/);
+                       if (phoneMatch) data.telefone = phoneMatch[0];
+                       
+                       // Regex Email
+                       const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g) || [];
+                       const validEmails = emails.filter(e => !e.includes('morada.ai') && !e.includes('sentry.io'));
+                       if (validEmails.length > 0) data.email = validEmails[0];
+                       
+                       // Regex Origem
+                       const originMatch = text.match(/Origem do Neg[ó][c]io:[\\s\\n]*([A-Za-zÀ-ÿ\\s]+)/i) || text.match(/Origem do Negocio:[\\s\\n]*([A-Za-zÀ-ÿ\\s]+)/i);
+                       if (originMatch) {
+                           data.origem = originMatch[1].replace('Ações rápidas', '').trim();
+                       }
+                       
+                       // Etapa (Funil)
+                       const etapaMatch = text.match(/(?:Em qualificação|Novo|Qualificação|Apresentação|Proposta|Negociação|Fechamento|Pré Atendimento)/i);
+                       if (etapaMatch) {
+                           const stageMatch = text.match(/([A-Za-zÀ-ÿ\\s]+)\\n(?:Produto\\s+Valor)/i);
+                           if (stageMatch) {
+                               data.etapa = stageMatch[1].trim();
+                           } else {
+                               data.etapa = etapaMatch[0].trim();
+                           }
+                       }
+                       
+                       // Produtos
+                       const lines = text.split('\\n');
+                       let foundHeader = false;
+                       for (let i = 0; i < lines.length; i++) {
+                           const line = lines[i].trim();
+                           if (line.match(/^Produto\\s+Valor$/i) || (line.includes('Produto') && line.includes('Valor'))) {
+                               foundHeader = true;
+                               continue;
+                           }
+                           if (foundHeader) {
+                               if (line.includes('R$') || line.match(/\\d+,\\d{2}/)) {
+                                   const prodName = line.split(/R\\$\\s*\\d+/)[0].trim().replace(/\\t+/g, ' ');
+                                   if (prodName && !prodName.includes('Deal moved')) {
+                                       data.produtos.push(prodName);
+                                   }
+                               } else {
+                                   if (data.produtos.length > 0) {
+                                       break;
+                                   }
+                               }
+                           }
+                       }
+                       
+                       // Responsável (SDR)
+                       const sdrNames = ["Mariane Goes", "GlorIA", "Gloría", "Moura Leite", "Gustavo"];
+                       for (let name of sdrNames) {
+                           if (text.includes(name)) {
+                               data.responsavel = name;
+                               break;
+                           }
+                       }
+                       
+                       return data;
+                  }""")
+
+                  # CAPTURA V7.0 — Detecção Fiel ao Morada AI
+                  raw_history = await page.evaluate(CAPTURE_MESSAGES_JS, header_name)
+                   
+                  if not raw_history:
+                      diag_print(f"⚠️ {header_name}: Nenhuma mensagem capturada no chat (DOM vazio). Pulando...")
+                      continue
+
+                  # ═══ PÓS-PROCESSAMENTO: Limpa labels, duplicatas, corrige remetentes ═══
+                  history_data = clean_message_history(raw_history, header_name)
+                  diag_print(f"  -> {header_name}: {len(raw_history)} raw -> {len(history_data)} limpos")
+                   
+                  if not history_data:
+                      diag_print(f"⚠️ {header_name}: Histórico ficou vazio após limpeza. Pulando...")
+                      continue
+                  
+                  total_analyzed += 1
+
+                  # AI Context Sync - Injeta TODAS as chaves disponíveis
+                  config_data = get_config()
+                  key = config_data.get("openai_key")
+                  if key: os.environ["OPENAI_API_KEY"] = key
+                  groq_key = config_data.get("groq_key")
+                  if groq_key: os.environ["GROQ_API_KEY"] = groq_key
+                  gemini_key = config_data.get("gemini_key")
+                  if gemini_key: os.environ["GEMINI_API_KEY"] = gemini_key
+
+                  analysis = await analyze_lead_conversation({
+                      "history": history_data,
+                      "sdr": lead_data.get('responsavel') or "Moura Leite Operação",
+                      "nome": header_name,
+                      "telefone": lead_data.get('telefone', ''),
+                      "email": lead_data.get('email', ''),
+                      "origem": lead_data.get('origem', ''),
+                      "etapa": lead_data.get('etapa', ''),
+                      "produtos": lead_data.get('produtos', [])
+                  })
+                  analysis['nome'] = header_name
+                  analysis['raw_messages'] = history_data
+                  analysis['timestamp'] = datetime.now().isoformat()
+                  analysis['url_morada'] = lead_url
+                  analysis['telefone'] = lead_data.get('telefone', '')
+                  analysis['email'] = lead_data.get('email', '')
+                  analysis['origem'] = lead_data.get('origem', '')
+                  analysis['etapa'] = lead_data.get('etapa', '')
+                  analysis['produtos'] = lead_data.get('produtos', [])
+                  
+                  # Track leads que falharam para retry posterior
+                  if analysis.get('_needs_retry'):
+                      failed_leads.append({"name": header_name, "history": history_data, "url": lead_url})
+                      diag_print(f"!️ {header_name} marcado para retry posterior")
+                  
+                  # Remove flag interna antes de salvar
+                  analysis.pop('_needs_retry', None)
+                  analysis.pop('_provider', None)
+                  
+                  # Persistência — isolada por usuario (com deduplicação global)
+                  db = safe_read_json(user_auditorias_file, {"auditores": []})
+                  
+                  sess_idx = next((i for i, s in enumerate(db["auditores"]) if s.get('id') == scan_id), -1)
+                  if sess_idx == -1:
+                       db["auditores"].append({"id": scan_id, "leads": []})
+                       sess_idx = len(db["auditores"]) - 1
+                  
+                  db["auditores"][sess_idx]["leads"] = [l for l in db["auditores"][sess_idx]["leads"] if (l.get('nome') or '').lower().strip() != header_name.lower().strip()]
+                  db["auditores"][sess_idx]["leads"].append(analysis)
+                  safe_write_json(user_auditorias_file, db)
+                  
+                  # ═══ SYNC IMEDIATO PARA A NUVEM ═══
+                  try:
+                      import firebase_db
+                      firebase_db.sync_leads_to_firebase([analysis])
+                  except Exception as fb_err:
+                      diag_print(f"⚠️ Sync Firebase por lead falhou: {fb_err}")
+                  
+                  cl = (analysis.get('classificacao','') or 'Atenção').lower()
+                  st = 'success' if 'saud' in cl else 'critico' if 'crit' in cl else 'atencao'
+                  try:
+                      await page.evaluate(f"window.updateSentinelaAura('{st}', '{header_name} OK')")
+                  except Exception:
+                      pass
+                  
+                  # Delay entre análises para respeitar rate-limits
+                  await asyncio.sleep(3)
+                  
+             except Exception as e:
+                   err_msg = str(e)
+                   err_type = type(e).__name__
+                   diag_print(f"Erro em {name} ({err_type}): {e}")
+                   # Cooldown de 2 segundos
+                   await asyncio.sleep(2)
+                   if 'TargetClosed' in err_type or 'TargetClosed' in err_msg or ('closed' in err_msg.lower() and ('browser' in err_msg.lower() or 'page' in err_msg.lower() or 'target' in err_msg.lower())):
+                       diag_print(f"⚠️ Página fechada ao analisar '{name}'. Tentando recuperar página do Morada...")
+                       try:
+                           # Procura se há alguma página aberta no morada.ai
+                           recovered = next((pt for pt in context.pages if 'morada.ai' in pt.url), None) if context else None
+                           if recovered:
+                               page = recovered
+                               await page.bring_to_front()
+                               diag_print("✅ Página do Morada recuperada! Continuando scan...")
+                           else:
+                               if context:
+                                   page = await context.new_page()
+                                   await page.goto("https://app.morada.ai/conversations", timeout=60000, wait_until="domcontentloaded")
+                                   diag_print("✅ Nova aba do Morada aberta para continuar!")
+                               else:
+                                   diag_print("❌ Contexto inexistente. Interrompendo scan.")
+                                   break
+                       except Exception as recovery_err:
+                           diag_print(f"❌ Falha na recuperação de página: {recovery_err}. Encerrando scan.")
+                           break
+                   continue
 
         # ═══ RETRY DE LEADS COM ERRO ═══
         if failed_leads:
@@ -785,7 +1165,7 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                        diag_print(f"Retry erro {fl['name']}: {retry_e}")
                        continue
 
-        diag_print(f"Scan finalizado. Total leads processados: {len(seen)}")
+        diag_print(f"═══ Scan finalizado. Total leads vistos: {len(seen)} | Analisados com IA: {total_analyzed} | Fora do período: {total_skipped_period} ═══")
         try:
             await page.evaluate("window.updateSentinelaAura('success', 'CONCLUÍDO')")
         except Exception:

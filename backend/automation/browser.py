@@ -866,7 +866,10 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                       diag_print(f"⏭️ Lead '{name}' fora do período '{period}' ({lead_elapsed_hours:.1f}h > {max_allowed_hours}h). Pulando [{total_old_leads_seen} fora do período até agora]...")
                       continue
 
-                  await page.evaluate(f"window.updateSentinelaAura('scanning', 'Analisando: {name}')")
+                  try:
+                      await page.evaluate(f"window.updateSentinelaAura('scanning', 'Analisando: {name}')")
+                  except Exception:
+                      pass
                   # Clica usando locator dinâmico e resiliente a DOM re-renders (evita "Element is not attached to the DOM")
                   el_locator = page.locator('div[class*="ListItem"], a[href*="/conversations/"]').filter(has_text=name).first
                   await el_locator.click(force=True)

@@ -360,38 +360,48 @@ async def _analyze_gemini(api_key: str, prompt_text: str, override_system_prompt
         if model_name in _model_cooldowns and now < _model_cooldowns[model_name]:
             continue
         
-        try:
-            model = genai.GenerativeModel(
-                model_name,
-                system_instruction=override_system_prompt or SYSTEM_PROMPT,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=0.2,
-                    response_mime_type="application/json",
+        for attempt in range(2):
+            try:
+                model = genai.GenerativeModel(
+                    model_name,
+                    system_instruction=override_system_prompt or SYSTEM_PROMPT,
+                    generation_config=genai.types.GenerationConfig(
+                        temperature=0.2,
+                        response_mime_type="application/json",
+                    )
                 )
-            )
-            print(f"[GEMINI] Tentando modelo: {model_name}")
-            response = await model.generate_content_async(prompt_text)
-            result = response.text
-            print(f"[GEMINI] [OK] Sucesso com modelo: {model_name}")
-            return result
-            
-        except Exception as e:
-            last_error = e
-            err_msg = str(e)
-            if "429" in err_msg:
-                if "limit: 0" in err_msg or "PerDay" in err_msg:
+                if attempt == 0:
+                    print(f"[GEMINI] Tentando modelo: {model_name}")
+                response = await model.generate_content_async(prompt_text)
+                result = response.text
+                print(f"[GEMINI] [OK] Sucesso com modelo: {model_name}")
+                return result
+                
+            except Exception as e:
+                last_error = e
+                err_msg = str(e)
+                if "429" in err_msg:
+                    if "limit: 0" in err_msg or "PerDay" in err_msg:
+                        _model_daily_exhausted.add(model_name)
+                        print(f"[GEMINI] ❌ {model_name} esgotou cota diária")
+                        break
+                    else:
+                        delay = _parse_retry_delay(err_msg)
+                        if delay <= 15 and attempt == 0:
+                            print(f"[GEMINI] ⏳ Rate limit curto ({delay}s). Aguardando e retentando...")
+                            await asyncio.sleep(delay + 1)
+                            continue
+                        _model_cooldowns[model_name] = now + delay
+                        print(f"[GEMINI] ⏳ {model_name} cooldown {delay}s")
+                elif "404" in err_msg:
                     _model_daily_exhausted.add(model_name)
-                    print(f"[GEMINI] ❌ {model_name} esgotou cota diária")
+                    print(f"[GEMINI] !️ {model_name} indisponível (404)")
                 else:
-                    delay = _parse_retry_delay(err_msg)
-                    _model_cooldowns[model_name] = now + delay
-                    print(f"[GEMINI] ⏳ {model_name} cooldown {delay}s")
-            elif "404" in err_msg:
-                _model_daily_exhausted.add(model_name)
-                print(f"[GEMINI] !️ {model_name} indisponível (404)")
-            else:
-                raise e
-            continue
+                    raise e
+                break
+        
+        # Se chegou aqui é porque o break foi acionado (falhou todas tentativas)
+        continue
     
     if last_error:
         raise last_error

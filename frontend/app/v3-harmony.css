@@ -24,25 +24,23 @@
   --logo-filter: none;
 }
 
-/* ====== TEMA CLARO (premium, não genérico) ====== */
+/* ====== TEMA CLARO (Clean & Standard) ====== */
 html.light {
-  --background: #f0f2f7;
-  --background-2: #ffffff;
-  --background-3: #f8fafc;
-  --foreground: #0f172a;
-  --foreground-2: #334155;
+  --background: #f8fafc; /* Fundo geral bem claro, quase branco */
+  --background-2: #ffffff; /* Fundo dos cards puramente branco */
+  --background-3: #f1f5f9; /* Hover */
+  --foreground: #0f172a; /* Texto principal bem escuro (alto contraste) */
+  --foreground-2: #334155; 
   --foreground-3: #64748b;
-  --glass: rgba(0, 0, 0, 0.03);
-  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.05);
   --sidebar-bg: #ffffff;
-  --sidebar-border: rgba(0, 0, 0, 0.06);
-  --card-bg: rgba(0, 0, 0, 0.02);
-  --card-border: rgba(0, 0, 0, 0.07);
-  --scrollbar-track: #f0f2f7;
-  --scrollbar-thumb: rgba(59, 130, 246, 0.4);
-  --gradient-top: rgba(59, 130, 246, 0.07);
-  --logo-blend: multiply;
-  --logo-filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3));
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0; /* Borda cinza clara bem visível para separar as coisas */
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: rgba(59, 130, 246, 0.6);
+  --gradient-top: rgba(255, 255, 255, 0); /* Removi o fundo radial azulado para ficar super limpo */
 }
 
 @theme {

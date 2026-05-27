@@ -166,7 +166,7 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-md">
       <div 
-        className="border w-full max-w-sm sm:max-w-md rounded-2xl sm:rounded-[32px] overflow-hidden relative shadow-[0_0_80px_rgba(0,0,0,1)] flex flex-col animate-in zoom-in-95 h-fit max-h-[95vh] sm:max-h-[90vh] transition-colors duration-300"
+        className="border w-full max-w-xl sm:max-w-3xl rounded-2xl sm:rounded-[32px] overflow-hidden relative shadow-[0_0_80px_rgba(0,0,0,1)] flex flex-col animate-in zoom-in-95 h-fit max-h-[95vh] sm:max-h-[90vh] transition-colors duration-300"
         style={{ backgroundColor: 'var(--background)', borderColor: 'var(--card-border)', borderTop: `4px solid ${color}` }}
       >
         <button onClick={onClose} className="absolute top-3 sm:top-4 right-3 sm:right-4 text-slate-500 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-all z-50">
@@ -254,51 +254,60 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
 
           <div className="flex-1 overflow-y-auto pr-1">
             {activeTab === 'analise' && (
-              <div className="flex flex-col gap-3 sm:gap-4">
-                <div className="bg-[#111115] p-3 rounded-xl border border-white/[0.03]">
-                  <h4 className="text-[7px] uppercase font-black text-blue-500 mb-1.5 tracking-widest">Mensagem de Prova (Contexto)</h4>
-                  <p className="text-blue-100 text-[9px] italic leading-relaxed border-l-2 border-blue-500/50 pl-2">"{lead.mensagem_prova || lead.ultima_mensagem_lead || 'Aguardando auditoria completa.'}"</p>
-                </div>
-
-                <div className="p-1">
-                  <h4 className="text-[7px] uppercase font-black text-slate-500 mb-1.5 tracking-widest">Diagnóstico Moura Leite</h4>
-                  <p className="text-slate-200 text-[9px] leading-relaxed font-medium">{lead.porque || 'Chave de IA não configurada.'}</p>
-                </div>
-
-                {lead.acoes_ja_realizadas && lead.acoes_ja_realizadas !== 'Nenhuma ação significativa identificada' && (
-                  <div className="p-3 bg-violet-500/[0.04] rounded-xl border border-violet-500/10">
-                    <h4 className="text-[7px] uppercase font-black text-violet-400 mb-1.5 tracking-widest">✓ Ações Já Realizadas pela SDR</h4>
-                    <p className="text-violet-100 text-[9px] leading-relaxed font-medium">{lead.acoes_ja_realizadas}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                
+                {/* COLUNA ESQUERDA: Contexto e Problema */}
+                <div className="flex flex-col gap-4">
+                  <div className="bg-[#111115] p-4 sm:p-5 rounded-2xl border border-white/[0.03]">
+                    <h4 className="text-[8px] sm:text-[9px] uppercase font-black text-blue-500 mb-2 tracking-widest">Mensagem de Prova (Contexto)</h4>
+                    <p className="text-blue-100 text-[11px] sm:text-[12px] italic leading-relaxed border-l-2 border-blue-500/50 pl-3">"{lead.mensagem_prova || lead.ultima_mensagem_lead || 'Aguardando auditoria completa.'}"</p>
                   </div>
-                )}
 
-                <div className="p-3 bg-blue-500/[0.04] rounded-xl border border-blue-500/10">
-                  <h4 className="text-[7px] uppercase font-black text-blue-400 mb-1.5 tracking-widest">Plano de Ação</h4>
-                  <p className="text-blue-50 text-[9px] font-bold leading-relaxed">{lead.acao_sugerida || 'Configure sua chave para gerar o plano.'}</p>
+                  <div className="p-2 bg-white/[0.01] rounded-xl border border-white/[0.02]">
+                    <h4 className="text-[8px] sm:text-[9px] uppercase font-black text-slate-500 mb-2 tracking-widest">Diagnóstico Moura Leite</h4>
+                    <p className="text-slate-200 text-[11px] sm:text-[13px] leading-relaxed font-medium">{lead.porque || 'Chave de IA não configurada.'}</p>
+                  </div>
+
+                  {lead.acoes_ja_realizadas && lead.acoes_ja_realizadas !== 'Nenhuma ação significativa identificada' && (
+                    <div className="p-4 bg-violet-500/[0.04] rounded-2xl border border-violet-500/10">
+                      <h4 className="text-[8px] sm:text-[9px] uppercase font-black text-violet-400 mb-2 tracking-widest">✓ Ações Já Realizadas pela SDR</h4>
+                      <p className="text-violet-100 text-[11px] sm:text-[13px] leading-relaxed font-medium">{lead.acoes_ja_realizadas}</p>
+                    </div>
+                  )}
                 </div>
 
-                {lead.mensagem_sugerida && (
-                  <div className="p-3 bg-emerald-500/[0.04] rounded-xl border border-emerald-500/10">
-                    <h4 className="text-[7px] uppercase font-black text-emerald-400 mb-1.5 tracking-widest">Resposta Sugerida</h4>
-                    <p className="text-emerald-50 text-[9px] leading-relaxed font-bold mb-3 italic">"{lead.mensagem_sugerida}"</p>
+                {/* COLUNA DIREITA: Solução e Ação */}
+                <div className="flex flex-col gap-4">
+                  <div className="p-4 sm:p-5 bg-blue-500/[0.04] rounded-2xl border border-blue-500/10 flex-1">
+                    <h4 className="text-[8px] sm:text-[9px] uppercase font-black text-blue-400 mb-2 tracking-widest">Plano de Ação</h4>
+                    <p className="text-blue-50 text-[11px] sm:text-[13px] font-bold leading-relaxed">{lead.acao_sugerida || 'Configure sua chave para gerar o plano.'}</p>
+                  </div>
+
+                  {lead.mensagem_sugerida && (
+                    <div className="p-4 sm:p-5 bg-emerald-500/[0.04] rounded-2xl border border-emerald-500/10 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h4 className="text-[8px] sm:text-[9px] uppercase font-black text-emerald-400 mb-2 tracking-widest">Resposta Sugerida</h4>
+                        <p className="text-emerald-50 text-[11px] sm:text-[13px] leading-relaxed font-bold mb-4 italic">"{lead.mensagem_sugerida}"</p>
+                      </div>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(lead.mensagem_sugerida)}
+                        className="text-[8px] font-black uppercase tracking-widest bg-emerald-500 text-black px-4 py-2 rounded-lg hover:scale-[1.02] active:scale-[0.98] transition-all w-full shadow-lg"
+                      >
+                        Copiar Mensagem
+                      </button>
+                    </div>
+                  )}
+
+                  {st !== 'saudável' && (
                     <button
-                      onClick={() => navigator.clipboard.writeText(lead.mensagem_sugerida)}
-                      className="text-[8px] font-black uppercase tracking-widest bg-emerald-500 text-black px-4 py-2 rounded-lg hover:scale-[1.02] active:scale-[0.98] transition-all w-full shadow-lg"
+                      onClick={() => handleStatusChange('Saudável')}
+                      disabled={saving}
+                      className="mt-2 text-[8px] font-black uppercase tracking-widest bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 px-4 py-2.5 rounded-xl hover:bg-emerald-600/30 hover:scale-[1.01] active:scale-[0.99] transition-all w-full"
                     >
-                      Copiar Mensagem
+                      {saving ? '⏳ Salvando...' : '✓ Marcar como Resolvido (Saudável)'}
                     </button>
-                  </div>
-                )}
-
-                {st !== 'saudável' && (
-                  <button
-                    onClick={() => handleStatusChange('Saudável')}
-                    disabled={saving}
-                    className="mt-2 text-[8px] font-black uppercase tracking-widest bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 px-4 py-2.5 rounded-xl hover:bg-emerald-600/30 hover:scale-[1.01] active:scale-[0.99] transition-all w-full"
-                  >
-                    {saving ? '⏳ Salvando...' : '✓ Marcar como Resolvido (Saudável)'}
-                  </button>
-                )}
+                  )}
+                </div>
               </div>
             )}
 

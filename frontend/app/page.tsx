@@ -244,7 +244,7 @@ export default function Dashboard() {
                 </button>
 
                 <button
-                 onClick={handleManualScan}
+                 onClick={handleScan}
                  disabled={aura.status === 'scanning'}
                  className={`relative px-6 py-2.5 rounded-full font-black text-[11px] uppercase tracking-widest transition-all overflow-hidden group border
                    ${aura.status === 'scanning' 

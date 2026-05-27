@@ -64,12 +64,13 @@ export default function LeadKanban({ leads, activeFilter }: { leads: Lead[], act
           const badge = getStatusBadge(lead.classificacao);
           return (
             <div 
-              key={idx} 
+              key={lead.telefone || idx} 
               onClick={() => setSelectedLead(lead)}
-              className={`bg-[#0d0d0f] p-2.5 sm:p-3 cursor-pointer hover:bg-[#121215] transition-all rounded-xl border-l-2 ${getStatusColor(lead.classificacao)} group`}
+              className={`p-2.5 sm:p-3 cursor-pointer transition-all rounded-xl border-l-2 ${getStatusColor(lead.classificacao)} group hover:-translate-y-0.5 shadow-sm hover:shadow-md`}
+              style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--card-border)', borderLeftColor: 'currentColor' }}
             >
               <div className="flex flex-col sm:flex-row justify-between items-start gap-2 mb-2">
-                <h4 className="font-extrabold text-white text-[11px] sm:text-[12px] truncate flex-1 group-hover:text-blue-300 transition-colors">{lead.nome}</h4>
+                <h4 className="font-extrabold text-[11px] sm:text-[12px] truncate flex-1 group-hover:text-blue-300 transition-colors">{lead.nome}</h4>
                 <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
                   <span className={`px-2 py-0.5 rounded-md border text-[7px] font-black uppercase tracking-wider whitespace-nowrap ${badge.cls}`}>
                     {badge.label}

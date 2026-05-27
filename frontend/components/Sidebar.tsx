@@ -126,33 +126,35 @@ export default function Sidebar() {
       >
         <div className="p-6 pt-12 overflow-y-auto flex-1 flex flex-col">
           
-          {/* LOGO — sem fundo quadrado, premium */}
+          {/* LOGO — transformada em badge premium (círculo perfeito) para cortar o fundo quadrado */}
           <div className="flex flex-col items-center mb-12 group">
-            {/* Container com glow animado em vez de fundo sólido */}
             <div className="relative flex items-center justify-center">
-              {/* Glow de fundo (só aparece no dark, some no light via opacidade) */}
+              {/* Glow externo */}
               <div
-                className="absolute inset-0 rounded-full blur-2xl transition-opacity duration-500"
+                className="absolute inset-0 rounded-full blur-xl transition-all duration-500"
                 style={{
-                  background: 'radial-gradient(circle, rgba(59,130,246,0.25) 0%, transparent 70%)',
-                  opacity: isLight ? 0.5 : 1,
-                  transform: 'scale(1.3)',
+                  background: 'radial-gradient(circle, rgba(59,130,246,0.4) 0%, transparent 80%)',
+                  transform: 'scale(1.4)',
                 }}
               />
-              <img
-                src="/logo.png"
-                alt="Sentinela IA"
-                className="relative w-32 h-32 object-contain group-hover:scale-105 transition-transform duration-700"
-                style={{
-                  mixBlendMode: isLight ? 'multiply' : 'lighten',
-                  filter: isLight
-                    ? 'drop-shadow(0 4px 16px rgba(59,130,246,0.25))'
-                    : 'drop-shadow(0 0 20px rgba(0,200,255,0.3))',
+              
+              {/* Container circular (corta as bordas quadradas da imagem) */}
+              <div 
+                className="relative w-28 h-28 rounded-full overflow-hidden flex items-center justify-center group-hover:scale-105 transition-all duration-700 shadow-[0_0_20px_rgba(59,130,246,0.2)]"
+                style={{ 
+                  backgroundColor: '#030712', // A imagem tem fundo preto, então o fundo do container deve ser preto
+                  border: '1px solid rgba(59,130,246,0.3)' 
                 }}
-                onError={(e) => {
-                  (e.target as any).src = '/logo.png?v=' + Date.now();
-                }}
-              />
+              >
+                <img
+                  src="/logo.png"
+                  alt="Sentinela IA"
+                  className="w-full h-full object-cover scale-[1.2]" /* Scale para preencher o círculo e esconder as bordas internas se houver */
+                  onError={(e) => {
+                    (e.target as any).src = '/logo.png?v=' + Date.now();
+                  }}
+                />
+              </div>
             </div>
           </div>
 

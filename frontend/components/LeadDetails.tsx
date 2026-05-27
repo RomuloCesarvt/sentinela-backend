@@ -164,10 +164,10 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-4 bg-black/98 backdrop-blur-2xl animate-in fade-in duration-300">
-      <div
-        className="bg-[#0c0c0e] border border-white/[0.08] w-full max-w-sm sm:max-w-md rounded-2xl sm:rounded-[32px] overflow-hidden relative shadow-[0_0_80px_rgba(0,0,0,1)] flex flex-col animate-in zoom-in-95 h-fit max-h-[95vh] sm:max-h-[90vh]"
-        style={{ borderTop: `4px solid ${color}` }}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-md">
+      <div 
+        className="border w-full max-w-sm sm:max-w-md rounded-2xl sm:rounded-[32px] overflow-hidden relative shadow-[0_0_80px_rgba(0,0,0,1)] flex flex-col animate-in zoom-in-95 h-fit max-h-[95vh] sm:max-h-[90vh] transition-colors duration-300"
+        style={{ backgroundColor: 'var(--background)', borderColor: 'var(--card-border)', borderTop: `4px solid ${color}` }}
       >
         <button onClick={onClose} className="absolute top-3 sm:top-4 right-3 sm:right-4 text-slate-500 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-all z-50">
           ✕

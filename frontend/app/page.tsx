@@ -39,9 +39,50 @@ export default function Dashboard() {
       setAura({ status: 'error', message: 'FALHA DE CONEXÃO COM BANCO' });
     });
 
-    const unsubLock = onSnapshot(doc(db, 'system', 'lock'), (doc) => {
-      if (doc.exists()) {
-        const lockData = doc.data();
+    const unsubLock = onSnapshot(doc(db, 'system', 'lock'), async (docSnap) => {
+      if (docSnap.exists()) {
+        const lockData = docSnap.data();
+        
+        // Auto-heal: Detecta locks travados/residuais e desbloqueia automaticamente
+        if (lockData.is_locked) {
+          let shouldAutoHeal = false;
+          
+          if (lockData.timestamp) {
+            // Calcula quanto tempo o lock está ativo
+            let lockTime: number;
+            if (lockData.timestamp.toDate) {
+              lockTime = lockData.timestamp.toDate().getTime();
+            } else if (lockData.timestamp.seconds) {
+              lockTime = lockData.timestamp.seconds * 1000;
+            } else {
+              lockTime = new Date(lockData.timestamp).getTime();
+            }
+            
+            const elapsedMs = Date.now() - lockTime;
+            const TEN_MINUTES = 10 * 60 * 1000;
+            
+            if (isNaN(lockTime) || elapsedMs > TEN_MINUTES) {
+              shouldAutoHeal = true;
+              console.warn(`[Sentinela] Lock residual detectado (${Math.round(elapsedMs / 60000)}min). Auto-desbloqueando...`);
+            }
+          } else {
+            // Lock sem timestamp = lock legado/órfão, sempre reseta
+            shouldAutoHeal = true;
+            console.warn('[Sentinela] Lock sem timestamp detectado (legado). Auto-desbloqueando...');
+          }
+          
+          if (shouldAutoHeal) {
+            try {
+              await setDoc(doc(db, 'system', 'lock'), { is_locked: false, locked_by: null, error: null, timestamp: null }, { merge: true });
+            } catch (e) {
+              console.error('[Sentinela] Erro ao auto-desbloquear:', e);
+            }
+            setScanLock({ is_locked: false, locked_by: null });
+            setAura({ status: 'healthy', message: 'SENTINELA ATIVO' });
+            return;
+          }
+        }
+        
         setScanLock({ is_locked: lockData.is_locked, locked_by: lockData.locked_by });
         if (lockData.error) {
           setAura({ status: 'error', message: `ERRO: ${lockData.error.substring(0, 60)}` });
@@ -80,7 +121,7 @@ export default function Dashboard() {
       return;
     }
     
-    await setDoc(doc(db, 'system', 'lock'), { is_locked: true, locked_by: user.username, error: null }, { merge: true });
+    await setDoc(doc(db, 'system', 'lock'), { is_locked: true, locked_by: user.username, error: null, timestamp: new Date().toISOString() }, { merge: true });
     
     // 1. TENTA USAR A EXTENSÃO (Abre aba ao lado no seu Chrome atual)
     if (document.documentElement.dataset.sentinelaExtension === "true") {
@@ -154,17 +195,20 @@ export default function Dashboard() {
   }), [uniqueLeads]);
 
   return (
-    <div className="min-h-screen bg-[#060608] text-white flex flex-col items-center p-4 md:p-6 font-inter overflow-x-hidden selection:bg-blue-500/30">
+    <div className="min-h-screen flex flex-col items-center p-4 md:p-6 font-inter overflow-x-hidden selection:bg-blue-500/30 transition-colors duration-300">
       
       {/* AURA ISLAND */}
       <div className="w-full max-w-[1400px] mb-4 relative z-50">
          <AuraIsland status={aura.status as any} message={aura.message} />
       </div>
 
-      <div className="w-full max-w-[1400px] flex flex-col gap-5 relative z-10 w-full pt-8 sm:pt-0">
+      <div className="w-full max-w-7xl relative z-10 flex flex-col gap-6 lg:gap-8 pt-4 lg:pt-0">
         
-        {/* HEADER */}
-        <header className="bg-[#0c0c0f] border border-white/[0.04] p-4 lg:p-5 rounded-[1rem] flex flex-col lg:flex-row items-center justify-between gap-4 relative overflow-hidden shadow-xl">
+        {/* HEADER DA DASHBOARD */}
+        <header 
+          className="border p-4 lg:p-5 rounded-[1rem] flex flex-col lg:flex-row items-center justify-between gap-4 relative overflow-hidden shadow-xl transition-colors duration-300"
+          style={{ backgroundColor: 'var(--background-2)', borderColor: 'var(--card-border)' }}
+        >
           {/* Subtle gradient glow */}
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-blue-600/10 rounded-full blur-[60px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
 
@@ -179,14 +223,15 @@ export default function Dashboard() {
              <div className="flex items-center gap-2 h-8 bg-black/40 border border-white/5 px-3 rounded-lg shadow-inner focus-within:border-blue-500/30 transition-all">
                 <Clock size={12} className="text-blue-400" />
                 <select 
-                  value={period}
-                  onChange={(e) => setPeriod(e.target.value)}
-                  className="bg-transparent text-[9px] font-bold text-white outline-none uppercase tracking-wider cursor-pointer"
-                >
-                   <option value="24h" className="bg-[#0c0c0f] text-white">Últimas 24 Horas</option>
-                   <option value="7d" className="bg-[#0c0c0f] text-white">Últimos 7 Dias</option>
-                   <option value="30d" className="bg-[#0c0c0f] text-white">Mês Atual</option>
-                </select>
+                   value={period}
+                   onChange={(e) => setPeriod(e.target.value)}
+                   className="appearance-none bg-transparent outline-none cursor-pointer pr-4 font-bold text-[11px] uppercase tracking-widest hover:text-blue-400 transition-colors"
+                   style={{ color: 'var(--foreground)' }}
+                 >
+                   <option value="24h" style={{ backgroundColor: 'var(--background-2)', color: 'var(--foreground)' }}>Últimas 24 Horas</option>
+                   <option value="7d" style={{ backgroundColor: 'var(--background-2)', color: 'var(--foreground)' }}>Últimos 7 Dias</option>
+                   <option value="30d" style={{ backgroundColor: 'var(--background-2)', color: 'var(--foreground)' }}>Mês Atual</option>
+                 </select>
              </div>
 
              <div className="flex items-center gap-2">
@@ -198,16 +243,16 @@ export default function Dashboard() {
                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-300 group-hover:text-red-400">Limpar</span>
                 </button>
 
-                <button 
-                  id="master-scan-btn"
-                  onClick={handleScan}
-                  disabled={scanLock.is_locked}
-                  className={`h-8 px-5 rounded-lg font-black text-[9px] uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg ${
-                    scanLock.is_locked 
-                      ? 'bg-[#15151a] text-blue-500 border border-blue-500/20 cursor-wait' 
-                      : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/25 active:scale-95'
-                  }`}
-                >
+                <button
+                 onClick={handleManualScan}
+                 disabled={aura.status === 'scanning'}
+                 className={`relative px-6 py-2.5 rounded-full font-black text-[11px] uppercase tracking-widest transition-all overflow-hidden group border
+                   ${aura.status === 'scanning' 
+                      ? 'text-blue-500 border-blue-500/20 cursor-wait' 
+                      : 'text-blue-400 border-blue-500/20 hover:border-blue-500/50 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]'
+                   }`}
+                 style={{ backgroundColor: aura.status === 'scanning' ? 'var(--card-bg)' : 'transparent' }}
+               >
                   <Scan size={12} className={scanLock.is_locked ? 'animate-spin' : 'animate-pulse'} />
                   {scanLock.is_locked ? 'Analisando...' : 'Master Scan'}
                 </button>
@@ -218,15 +263,16 @@ export default function Dashboard() {
         {/* METRICS */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 w-full">
            {[
-             { l: 'Total em Auditoria', v: totals.total, filter: null, c: 'text-blue-400', b: 'bg-blue-500/10', r: 'border-blue-500/20', i: BarChart3 },
-             { l: 'Leads Críticos', v: totals.crit, filter: 'crítico', c: 'text-red-400', b: 'bg-red-500/10', r: 'border-red-500/20', i: ShieldAlert },
-             { l: 'Em Atenção', v: totals.aten, filter: 'atenção', c: 'text-yellow-400', b: 'bg-yellow-500/10', r: 'border-yellow-500/20', i: Sparkles },
-             { l: 'Leads Saudáveis', v: totals.saud, filter: 'saudável', c: 'text-emerald-400', b: 'bg-emerald-500/10', r: 'border-emerald-500/20', i: CheckCircle2 },
+             { label: 'Total em Auditoria', v: totals.total, filter: null, c: 'text-blue-400', b: 'bg-blue-500/10', r: 'border-blue-500/20', i: BarChart3 },
+             { label: 'Leads Críticos', v: totals.crit, filter: 'crítico', c: 'text-red-400', b: 'bg-red-500/10', r: 'border-red-500/20', i: ShieldAlert },
+             { label: 'Em Atenção', v: totals.aten, filter: 'atenção', c: 'text-yellow-400', b: 'bg-yellow-500/10', r: 'border-yellow-500/20', i: Sparkles },
+             { label: 'Leads Saudáveis', v: totals.saud, filter: 'saudável', c: 'text-emerald-400', b: 'bg-emerald-500/10', r: 'border-emerald-500/20', i: CheckCircle2 },
            ].map((k, i) => (
              <div 
-               key={i} 
-               onClick={() => setActiveFilter(k.filter)}
-               className={`p-3.5 rounded-xl bg-[#0c0c0f] border ${k.r} flex flex-col gap-1.5 group transition-all hover:bg-[#111116] cursor-pointer ${activeFilter === k.filter ? 'ring-2 ring-white/20 bg-[#121215]' : ''}`}
+               key={k.label} 
+               onClick={() => setActiveFilter(activeFilter === k.filter ? null : k.filter as any)}
+               className={`p-3.5 rounded-xl border ${k.r} flex flex-col gap-1.5 group transition-all cursor-pointer ${activeFilter === k.filter ? 'ring-2 ring-blue-500/50 scale-[1.02]' : 'hover:scale-[1.02]'}`}
+               style={{ backgroundColor: activeFilter === k.filter ? 'var(--background-3)' : 'var(--background-2)', borderColor: 'var(--card-border)' }}
              >
                 <div className="flex items-center justify-between">
                    <div className={`w-6 h-6 rounded-md ${k.b} flex items-center justify-center`}>
@@ -234,13 +280,16 @@ export default function Dashboard() {
                    </div>
                    <span className="text-xl font-bold tracking-tight text-white/95">{k.v}</span>
                 </div>
-                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">{k.l}</p>
+                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">{k.label}</p>
              </div>
            ))}
         </div>
 
-        {/* KANBAN BOARD */}
-        <main className="bg-[#0c0c0f] border border-white/[0.04] rounded-[1rem] p-4 lg:p-5 shadow-xl relative min-h-[500px] w-full">
+        {/* LISTA DE LEADS (KANBAN / CARDS) */}
+        <main 
+          className="border rounded-[1rem] p-4 lg:p-5 shadow-xl relative min-h-[500px] w-full transition-colors duration-300"
+          style={{ backgroundColor: 'var(--background-2)', borderColor: 'var(--card-border)' }}
+        >
            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
                  <div className="w-1 h-4 bg-blue-600 rounded-full shadow-[0_0_10px_rgba(37,99,235,0.4)]"></div>

@@ -164,195 +164,172 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-3 bg-black/70 backdrop-blur-md">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm">
       <div 
-        className="border w-full max-w-2xl sm:max-w-5xl rounded-2xl sm:rounded-[28px] overflow-hidden relative shadow-[0_0_80px_rgba(0,0,0,1)] flex flex-col animate-in zoom-in-95 max-h-[98vh] sm:max-h-[96vh] transition-colors duration-300"
-        style={{ backgroundColor: 'var(--background)', borderColor: 'var(--card-border)', borderTop: `4px solid ${color}` }}
+        className="w-full max-w-4xl bg-[#0a0a0c] rounded-2xl overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col animate-in zoom-in-95 max-h-[90vh] transition-colors duration-300"
+        style={{ border: `1px solid var(--card-border)`, borderTop: `4px solid ${color}` }}
       >
-        <button onClick={onClose} className="absolute top-3 sm:top-5 right-3 sm:right-5 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-2.5 rounded-full transition-all z-50">
-          <span className="text-base">✕</span>
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-all z-50 flex items-center justify-center w-8 h-8">
+          ✕
         </button>
 
-        <div className="p-4 sm:p-8 flex flex-col h-full overflow-hidden">
-          {/* Header — compact */}
-          <div className="mb-4 sm:mb-5 shrink-0">
-            {/* Row 1: Label + Status */}
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] sm:text-[11px] font-black text-slate-500 uppercase tracking-widest">SENTINELA INSPECTION</span>
-              <div className="relative">
-                <button
-                  onClick={() => setShowStatusPicker(!showStatusPicker)}
-                  className="px-3 py-1 rounded-lg text-[11px] font-black uppercase text-white hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 border border-white/20"
-                  style={{ backgroundColor: color }}
-                >
-                  {currentStatus} <span className="opacity-70 text-[9px]">▼</span>
-                </button>
-                {showStatusPicker && (
-                  <div className="absolute top-full right-0 mt-1 bg-[#1a1a1e] border border-white/10 rounded-xl shadow-[0_0_30px_rgba(0,0,0,1)] z-[300] overflow-hidden min-w-[160px]">
-                    {STATUS_OPTIONS.map(opt => (
-                      <button
-                        key={opt.value}
-                        onClick={() => handleStatusChange(opt.value)}
-                        disabled={saving}
-                        className={`w-full text-left px-4 py-2.5 text-[12px] font-black uppercase tracking-wider flex items-center gap-2 hover:bg-white/5 transition-all ${currentStatus === opt.value ? 'bg-white/10' : ''}`}
-                      >
-                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: opt.color }} />
-                        <span className="text-white">{opt.label}</span>
-                        {currentStatus === opt.value && <span className="ml-auto text-[10px]">✓</span>}
-                      </button>
-                    ))}
-                  </div>
-                )}
+        <div className="flex flex-col h-full overflow-hidden">
+          <div className="p-6 sm:p-8 shrink-0 border-b border-white/5 bg-white/[0.01]">
+            <div className="flex flex-col md:flex-row gap-6 justify-between items-start pr-8">
+              <div className="flex-1 flex flex-col gap-3">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">SENTINELA INSPECTION</span>
+                <h2 className="text-2xl font-black text-white tracking-tight leading-none break-words">
+                  {lead.nome}
+                </h2>
+                
+                <div className="flex flex-wrap gap-2 mt-2">
+                  <span className="px-2.5 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded text-indigo-300 font-bold text-xs uppercase tracking-wide">
+                    {lead.empreendimento_detectado || 'EM AUDITORIA'}
+                  </span>
+                  {lead.tempo_medio_resposta && (
+                    <span className="px-2.5 py-1 bg-white/5 border border-white/10 rounded text-slate-300 font-medium text-xs">
+                      ⏱️ {lead.tempo_medio_resposta}
+                    </span>
+                  )}
+                  {lead.telefone && <span className="px-2.5 py-1 bg-white/5 border border-white/10 rounded text-slate-300 font-medium text-xs">📞 {lead.telefone}</span>}
+                  {lead.origem && <span className="px-2.5 py-1 bg-white/5 border border-white/10 rounded text-slate-300 font-medium text-xs">🌍 {lead.origem}</span>}
+                  {lead.etapa && <span className="px-2.5 py-1 bg-white/5 border border-white/10 rounded text-slate-300 font-medium text-xs">📍 {lead.etapa}</span>}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4 w-full md:w-64 shrink-0">
+                <div className="relative">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">STATUS DA AUDITORIA</div>
+                  <button
+                    onClick={() => setShowStatusPicker(!showStatusPicker)}
+                    className="w-full px-4 py-2 rounded-lg text-xs font-black uppercase text-white hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between shadow-lg"
+                    style={{ backgroundColor: color }}
+                  >
+                    <span>{currentStatus}</span>
+                    <span className="opacity-70 text-[10px]">▼</span>
+                  </button>
+                  {showStatusPicker && (
+                    <div className="absolute top-full right-0 mt-2 bg-[#1a1a1e] border border-white/10 rounded-xl shadow-2xl z-[300] overflow-hidden w-full">
+                      {STATUS_OPTIONS.map(opt => (
+                        <button
+                          key={opt.value}
+                          onClick={() => handleStatusChange(opt.value)}
+                          disabled={saving}
+                          className={`w-full text-left px-4 py-3 text-xs font-black uppercase tracking-wider flex items-center gap-2 hover:bg-white/5 transition-all ${currentStatus === opt.value ? 'bg-white/10' : ''}`}
+                        >
+                          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: opt.color }} />
+                          <span className="text-white">{opt.label}</span>
+                          {currentStatus === opt.value && <span className="ml-auto text-[10px]">✓</span>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.05]">
+                  <ScoreBar score={lead.score_engajamento ?? 0} />
+                </div>
               </div>
             </div>
 
-            {/* Row 2: Nome */}
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight mb-3 pr-10 break-words">
-              {lead.nome}
-            </h2>
-
-            {/* Row 3: Score bar + meta inline */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 items-stretch">
-              <div className="flex-1 p-3 bg-white/[0.02] rounded-xl border border-white/[0.04]">
-                <ScoreBar score={lead.score_engajamento ?? 0} />
-              </div>
-              <div className="flex flex-wrap gap-2 items-center shrink-0">
-                <span className="px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-300 font-bold text-[12px] uppercase tracking-wide">
-                  {lead.empreendimento_detectado || 'EM AUDITORIA'}
-                </span>
-                {lead.tempo_medio_resposta && (
-                  <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-slate-300 font-bold text-[12px]">
-                    ⏱️ {lead.tempo_medio_resposta}
-                  </span>
-                )}
-                {lead.telefone && <span className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-slate-300 font-medium text-[12px]">📞 {lead.telefone}</span>}
-                {lead.origem && <span className="px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-lg text-blue-300 font-bold text-[12px]">🌍 {lead.origem}</span>}
-                {lead.etapa && <span className="px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-indigo-300 font-bold text-[12px]">📍 {lead.etapa}</span>}
-                {lead.produtos && lead.produtos.length > 0 && (
-                  <span className="px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-lg text-cyan-300 font-bold text-[12px]" title={lead.produtos.join(', ')}>
-                    🏷️ {lead.produtos.join(', ')}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Row 4: Morada link */}
-            <div className="mt-3">
-              {lead.url_morada ? (
+            {lead.url_morada && (
+              <div className="mt-5">
                 <a
                   href={lead.url_morada}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/20 rounded-xl text-[12px] font-black text-white uppercase tracking-widest transition-all w-full hover:-translate-y-0.5 text-center"
+                  className="inline-flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-black text-white uppercase tracking-widest transition-all w-full text-center"
                 >
                   ↗ ABRIR CONVERSA NO MORADA AI
                 </a>
-              ) : (
-                <div className="inline-flex items-center justify-center px-4 py-2.5 bg-slate-800 text-slate-500 rounded-xl text-[12px] font-black uppercase tracking-widest cursor-not-allowed w-full text-center">
-                  🔗 Link Indisponível (Refaça o Scan)
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
-          {/* TABS */}
-          <div className="flex border-b border-white/10 mb-4 sm:mb-5 shrink-0">
+          <div className="flex border-b border-white/5 bg-[#0a0a0c] px-6 sm:px-8 pt-4 shrink-0">
             <button
               onClick={() => setActiveTab('analise')}
-              className={`flex-1 pb-3 text-[11px] sm:text-[12px] font-black uppercase tracking-widest transition-all ${activeTab === 'analise' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-600 hover:text-slate-400'}`}
+              className={`pb-3 px-4 text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'analise' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
             >
-              BIÓPSIA
+              Biópsia
             </button>
             {hasScorecard && (
               <button
                 onClick={() => setActiveTab('scorecard')}
-                className={`flex-1 pb-3 text-[11px] sm:text-[12px] font-black uppercase tracking-widest transition-all ${activeTab === 'scorecard' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-600 hover:text-slate-400'}`}
+                className={`pb-3 px-4 text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'scorecard' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
               >
-                SCORECARD
+                Scorecard
               </button>
             )}
             <button
               onClick={() => setActiveTab('conversa')}
-              className={`flex-1 pb-3 text-[11px] sm:text-[12px] font-black uppercase tracking-widest transition-all ${activeTab === 'conversa' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-600 hover:text-slate-400'}`}
+              className={`pb-3 px-4 text-xs font-black uppercase tracking-widest transition-all ${activeTab === 'conversa' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-500 hover:text-slate-300'}`}
             >
-              CONVERSA
+              Conversa
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-1">
+          <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
             {activeTab === 'analise' && (
-              <div className="flex flex-col gap-6">
-                
-                {/* MENSAGEM DE PROVA */}
-                <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.08) 0%, rgba(59,130,246,0.02) 100%)', border: '1px solid rgba(59,130,246,0.15)' }}>
-                  <div className="px-5 sm:px-6 pt-4 pb-2 flex items-center gap-3" style={{ borderBottom: '1px solid rgba(59,130,246,0.08)' }}>
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ background: 'rgba(59,130,246,0.15)' }}>
-                      <span className="text-base">💬</span>
-                    </span>
-                    <h4 className="text-[12px] sm:text-[13px] uppercase font-black text-blue-400 tracking-widest">Mensagem de Prova (Contexto)</h4>
+              <div className="flex flex-col gap-5">
+                <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl overflow-hidden">
+                  <div className="px-5 py-3 border-b border-white/[0.02] flex items-center gap-2 bg-white/[0.01]">
+                    <span className="text-slate-400">💬</span>
+                    <h4 className="text-xs uppercase font-bold text-slate-300 tracking-wider">Mensagem de Prova (Contexto)</h4>
                   </div>
-                  <div className="px-5 sm:px-6 py-5">
-                    <div className="border-l-[3px] border-blue-500/60 pl-5">
-                      <p className="text-blue-100 text-[14px] sm:text-[15px] italic leading-[1.85] font-medium" style={{ wordBreak: 'break-word' }}>
-                        &ldquo;{lead.mensagem_prova || lead.ultima_mensagem_lead || 'Aguardando auditoria completa.'}&rdquo;
+                  <div className="p-5">
+                    <div className="border-l-2 border-slate-600 pl-4">
+                      <p className="text-slate-200 text-sm leading-relaxed font-medium italic break-words">
+                        "{lead.mensagem_prova || lead.ultima_mensagem_lead || 'Aguardando auditoria completa.'}"
                       </p>
                     </div>
                   </div>
                 </div>
 
-                {/* DIAGNÓSTICO */}
-                <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(148,163,184,0.06) 0%, rgba(148,163,184,0.01) 100%)', border: '1px solid rgba(148,163,184,0.1)' }}>
-                  <div className="px-5 sm:px-6 pt-4 pb-2 flex items-center gap-3" style={{ borderBottom: '1px solid rgba(148,163,184,0.06)' }}>
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ background: 'rgba(148,163,184,0.1)' }}>
-                      <span className="text-base">🔍</span>
-                    </span>
-                    <h4 className="text-[12px] sm:text-[13px] uppercase font-black text-slate-400 tracking-widest">Diagnóstico Moura Leite</h4>
+                <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl overflow-hidden">
+                  <div className="px-5 py-3 border-b border-white/[0.02] flex items-center gap-2 bg-white/[0.01]">
+                    <span className="text-slate-400">🔍</span>
+                    <h4 className="text-xs uppercase font-bold text-slate-300 tracking-wider">Diagnóstico Moura Leite</h4>
                   </div>
-                  <div className="px-5 sm:px-6 py-5">
-                    <p className="text-slate-200 text-[14px] sm:text-[15px] leading-[1.85] font-medium" style={{ wordBreak: 'break-word' }}>
+                  <div className="p-5">
+                    <p className="text-slate-200 text-sm leading-relaxed break-words">
                       {lead.porque || 'Chave de IA não configurada.'}
                     </p>
                   </div>
                 </div>
 
-                {/* AÇÕES JÁ REALIZADAS */}
                 {lead.acoes_ja_realizadas && lead.acoes_ja_realizadas !== 'Nenhuma ação significativa identificada' && (
-                  <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.08) 0%, rgba(139,92,246,0.02) 100%)', border: '1px solid rgba(139,92,246,0.15)' }}>
-                    <div className="px-5 sm:px-6 pt-4 pb-2 flex items-center gap-3" style={{ borderBottom: '1px solid rgba(139,92,246,0.08)' }}>
-                      <span className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ background: 'rgba(139,92,246,0.15)' }}>
-                        <span className="text-base">✅</span>
-                      </span>
-                      <h4 className="text-[12px] sm:text-[13px] uppercase font-black text-violet-400 tracking-widest">Ações Já Realizadas pela SDR</h4>
+                  <div className="bg-violet-500/5 border border-violet-500/20 rounded-xl overflow-hidden">
+                    <div className="px-5 py-3 border-b border-violet-500/10 flex items-center gap-2 bg-violet-500/10">
+                      <span>✅</span>
+                      <h4 className="text-xs uppercase font-bold text-violet-300 tracking-wider">Ações Já Realizadas pela SDR</h4>
                     </div>
-                    <div className="px-5 sm:px-6 py-5">
-                      <p className="text-violet-100 text-[14px] sm:text-[15px] leading-[1.85] font-medium" style={{ wordBreak: 'break-word' }}>
+                    <div className="p-5">
+                      <p className="text-violet-100 text-sm leading-relaxed break-words">
                         {lead.acoes_ja_realizadas}
                       </p>
                     </div>
                   </div>
                 )}
 
-                {/* PLANO DE AÇÃO */}
-                <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(99,102,241,0.05) 100%)', border: '1px solid rgba(59,130,246,0.2)', boxShadow: '0 4px 24px rgba(59,130,246,0.06)' }}>
-                  <div className="px-5 sm:px-6 pt-4 pb-2 flex items-center gap-3" style={{ borderBottom: '1px solid rgba(59,130,246,0.1)' }}>
-                    <span className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ background: 'rgba(59,130,246,0.2)' }}>
-                      <span className="text-base">🎯</span>
-                    </span>
-                    <h4 className="text-[12px] sm:text-[13px] uppercase font-black text-blue-400 tracking-widest">Plano de Ação</h4>
+                <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(59,130,246,0.05)]">
+                  <div className="px-5 py-3 border-b border-blue-500/10 flex items-center gap-2 bg-blue-500/10">
+                    <span>🎯</span>
+                    <h4 className="text-xs uppercase font-bold text-blue-400 tracking-wider">Plano de Ação Sugerido</h4>
                   </div>
-                  <div className="px-5 sm:px-6 py-5">
+                  <div className="p-5">
                     {(() => {
                       const actionText = lead.acao_sugerida || 'Configure sua chave para gerar o plano.';
                       const lines = actionText.split(/[\n\r]+|(?:\.\s+)(?=[A-Z0-9])/g).filter((l: string) => l.trim());
                       if (lines.length > 1) {
                         return (
-                          <div className="flex flex-col gap-4">
+                          <div className="flex flex-col gap-3">
                             {lines.map((line: string, idx: number) => (
                               <div key={idx} className="flex gap-3 items-start">
-                                <span className="flex items-center justify-center w-7 h-7 rounded-full text-[11px] font-black shrink-0 mt-0.5" style={{ background: 'rgba(59,130,246,0.2)', color: '#60a5fa' }}>
+                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 text-xs font-bold shrink-0 mt-0.5">
                                   {idx + 1}
                                 </span>
-                                <p className="text-blue-50 text-[14px] sm:text-[15px] font-semibold leading-[1.85] flex-1" style={{ wordBreak: 'break-word' }}>
+                                <p className="text-blue-50 text-sm leading-relaxed flex-1 break-words">
                                   {line.trim().replace(/\.$/, '')}.
                                 </p>
                               </div>
@@ -361,7 +338,7 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
                         );
                       }
                       return (
-                        <p className="text-blue-50 text-[14px] sm:text-[15px] font-semibold leading-[1.85]" style={{ wordBreak: 'break-word' }}>
+                        <p className="text-blue-50 text-sm font-medium leading-relaxed break-words">
                           {actionText}
                         </p>
                       );
@@ -369,39 +346,35 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
                   </div>
                 </div>
 
-                {/* RESPOSTA SUGERIDA */}
                 {lead.mensagem_sugerida && (
-                  <div className="rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.02) 100%)', border: '1px solid rgba(16,185,129,0.15)' }}>
-                    <div className="px-5 sm:px-6 pt-4 pb-2 flex items-center gap-2.5" style={{ borderBottom: '1px solid rgba(16,185,129,0.08)' }}>
-                      <span className="flex items-center justify-center w-8 h-8 rounded-lg" style={{ background: 'rgba(16,185,129,0.15)' }}>
-                        <span className="text-base">✉️</span>
-                      </span>
-                      <h4 className="text-[12px] sm:text-[13px] uppercase font-black text-emerald-400 tracking-widest">Resposta Sugerida</h4>
+                  <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl overflow-hidden">
+                    <div className="px-5 py-3 border-b border-emerald-500/10 flex items-center gap-2 bg-emerald-500/10">
+                      <span>✉️</span>
+                      <h4 className="text-xs uppercase font-bold text-emerald-400 tracking-wider">Resposta Pronta Sugerida</h4>
                     </div>
-                    <div className="px-5 sm:px-6 py-5">
-                      <div className="border-l-[3px] border-emerald-500/60 pl-5 mb-5">
-                        <p className="text-emerald-50 text-[14px] sm:text-[15px] leading-[1.85] font-medium italic" style={{ wordBreak: 'break-word' }}>
-                          &ldquo;{lead.mensagem_sugerida}&rdquo;
+                    <div className="p-5 flex flex-col gap-4">
+                      <div className="border-l-2 border-emerald-500/50 pl-4">
+                        <p className="text-emerald-100 text-sm leading-relaxed italic break-words">
+                          "{lead.mensagem_sugerida}"
                         </p>
                       </div>
                       <button
                         onClick={() => navigator.clipboard.writeText(lead.mensagem_sugerida)}
-                        className="text-[12px] font-black uppercase tracking-widest bg-emerald-500 text-black px-5 py-3 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all w-full shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30"
+                        className="self-start text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-lg transition-all shadow-lg"
                       >
-                        📋 Copiar Mensagem
+                        Copiar Mensagem
                       </button>
                     </div>
                   </div>
                 )}
 
-                {/* BOTÃO RESOLVER */}
                 {st !== 'saudável' && (
                   <button
                     onClick={() => handleStatusChange('Saudável')}
                     disabled={saving}
-                    className="text-[12px] font-black uppercase tracking-widest bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 px-5 py-3.5 rounded-xl hover:bg-emerald-600/30 hover:scale-[1.01] active:scale-[0.99] transition-all w-full"
+                    className="mt-2 text-xs font-bold uppercase tracking-wider bg-white/5 border border-white/10 hover:bg-emerald-600/20 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-400 px-5 py-4 rounded-xl transition-all w-full text-center"
                   >
-                    {saving ? '⏳ Salvando...' : '✓ Marcar como Resolvido (Saudável)'}
+                    {saving ? '⏳ Salvando...' : '✓ Marcar auditoria como Resolvida (Saudável)'}
                   </button>
                 )}
               </div>
@@ -426,21 +399,21 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
                     return (
                       <div className="flex flex-col gap-4">
                         {evidenceText && (
-                          <div className="p-3 bg-amber-500/10 border border-amber-500/40 rounded-xl">
-                            <span className="text-[6px] font-black uppercase tracking-widest text-amber-500 mb-2 block">GARGALO / PROVA DETECTADA</span>
-                            <p className="text-slate-200 leading-relaxed font-medium text-[8px] italic">"{evidenceText}"</p>
+                          <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-500 mb-2 block">Prova Detectada pela IA</span>
+                            <p className="text-amber-100/80 leading-relaxed text-sm italic">"{evidenceText}"</p>
                           </div>
                         )}
-                        <div className="flex flex-col gap-2">
-                          <div className="text-center text-[7px] text-slate-600 font-bold tracking-widest opacity-50 mb-2">••• Conversa Completa •••</div>
+                        <div className="flex flex-col gap-3">
+                          <div className="text-center text-[10px] text-slate-600 font-bold tracking-widest mb-2">Histórico Completo</div>
                           {allMsgs.map((m: any, idx: number) => {
                             const isSdr = m.from === 'SDR';
                             return (
-                              <div key={idx} className={`p-2.5 rounded-xl text-[8px] max-w-[95%] ${isSdr ? 'bg-blue-600/5 ml-auto border border-blue-600/20' : 'bg-white/5 border border-white/10'}`}>
-                                <span className={`text-[6px] font-black uppercase tracking-widest block mb-1 ${isSdr ? 'text-blue-400' : 'text-emerald-400'}`}>
-                                  {isSdr ? 'GLÓRIA / SDR' : 'CLIENTE'}
+                              <div key={idx} className={`p-3.5 rounded-xl text-sm max-w-[90%] ${isSdr ? 'bg-blue-600/10 ml-auto border border-blue-500/20' : 'bg-white/5 border border-white/10'}`}>
+                                <span className={`text-[10px] font-bold uppercase tracking-wider block mb-1.5 ${isSdr ? 'text-blue-400' : 'text-emerald-400'}`}>
+                                  {isSdr ? 'SDR' : 'CLIENTE'}
                                 </span>
-                                <p className="text-slate-200 leading-relaxed font-medium">{m.text}</p>
+                                <p className="text-slate-200 leading-relaxed">{m.text}</p>
                               </div>
                             );
                           })}
@@ -450,25 +423,25 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
                   }
 
                   return (
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-3">
                       {allMsgs.map((m: any, idx: number) => {
                         const isEvidence = idx === evidenceIdx;
                         const isSdr = m.from === 'SDR';
                         return (
-                          <div key={idx} className={`p-2.5 rounded-xl text-[8px] max-w-[95%] ${
+                          <div key={idx} className={`p-3.5 rounded-xl text-sm max-w-[90%] ${
                             isEvidence
                               ? 'bg-amber-500/10 border border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.1)]'
                               : isSdr
-                              ? 'bg-blue-600/5 ml-auto border border-blue-600/20'
+                              ? 'bg-blue-600/10 ml-auto border border-blue-500/20'
                               : 'bg-white/5 border border-white/10'
                           }`}>
-                            <span className={`text-[6px] font-black uppercase tracking-widest block mb-1 ${
+                            <span className={`text-[10px] font-bold uppercase tracking-wider block mb-1.5 ${
                               isEvidence ? 'text-amber-500' : isSdr ? 'text-blue-400' : 'text-emerald-400'
                             }`}>
-                              {isSdr ? 'GLÓRIA / SDR' : 'CLIENTE'}
-                              {isEvidence && ' • FOCO DA IA (GARGALO)'}
+                              {isSdr ? 'SDR' : 'CLIENTE'}
+                              {isEvidence && ' • FOCO DA ANÁLISE'}
                             </span>
-                            <p className="text-slate-200 leading-relaxed font-medium">{m.text}</p>
+                            <p className="text-slate-200 leading-relaxed">{m.text}</p>
                           </div>
                         );
                       })}
@@ -476,13 +449,11 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
                   );
                 })()}
                 {(!lead.raw_messages || lead.raw_messages.length === 0) && (
-                  <p className="text-[8px] text-slate-500 text-center italic">Aguardando auditoria completa.</p>
+                  <p className="text-sm text-slate-500 text-center italic py-10">Aguardando auditoria completa ou histórico indisponível.</p>
                 )}
               </div>
             )}
           </div>
-
-          {/* Footer removed — status is now in the header */}
         </div>
       </div>
     </div>

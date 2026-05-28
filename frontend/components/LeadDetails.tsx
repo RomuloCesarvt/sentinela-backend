@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const STATUS_OPTIONS = [
   { value: 'Crítico', color: '#ef4444', label: 'CRÍTICO' },
@@ -139,7 +140,18 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
   const [currentStatus, setCurrentStatus] = useState(lead?.classificacao || 'Atenção');
   const [saving, setSaving] = useState(false);
 
-  if (!lead) return null;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // Impede o scroll do body quando o modal está aberto
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  if (!lead || !mounted) return null;
 
   const st = (currentStatus || 'Atenção').toLowerCase();
   const color = st === 'crítico' ? '#ef4444' : st === 'atenção' ? '#eab308' : '#10b981';
@@ -163,8 +175,8 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm">
+  const modalContent = (
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm">
       <div 
         className="w-full max-w-4xl bg-[#0a0a0c] rounded-2xl overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col animate-in zoom-in-95 max-h-[90vh] transition-colors duration-300"
         style={{ border: `1px solid var(--card-border)`, borderTop: `4px solid ${color}` }}
@@ -458,4 +470,6 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

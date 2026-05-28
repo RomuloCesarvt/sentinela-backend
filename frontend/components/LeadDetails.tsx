@@ -73,11 +73,11 @@ function ScorecardPanel({ scorecard }: { scorecard: Record<string, any> }) {
   const groups = ['A', 'B', 'C', 'D'];
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between mb-1">
-        <h4 className="text-[7px] sm:text-[8px] uppercase font-black text-slate-500 tracking-widest">Scorecard Auditável</h4>
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-xs uppercase font-black text-slate-500 tracking-widest">Scorecard Auditável</h4>
         {scorecard.pontuacao_detalhada && (
-          <span className="text-[7px] font-bold text-slate-600 italic truncate max-w-[55%] text-right">
+          <span className="text-xs font-bold text-slate-500 italic truncate max-w-[60%] text-right">
             {scorecard.pontuacao_detalhada}
           </span>
         )}
@@ -88,36 +88,36 @@ function ScorecardPanel({ scorecard }: { scorecard: Record<string, any> }) {
         const meta = GROUP_LABELS[group];
 
         return (
-          <div key={group} className="rounded-lg border border-white/[0.04] overflow-hidden">
+          <div key={group} className="rounded-xl border border-white/[0.04] overflow-hidden bg-[#0d0d12]">
             <div
-              className="px-2 py-1 text-[6px] font-black uppercase tracking-widest"
-              style={{ color: meta.color, background: `${meta.color}10` }}
+              className="px-4 py-2.5 text-[10px] sm:text-xs font-black uppercase tracking-widest"
+              style={{ color: meta.color, background: `${meta.color}15` }}
             >
               {meta.label}
             </div>
             <div className="flex flex-col divide-y divide-white/[0.03]">
               {activeKeys.length === 0 && group === 'C' ? (
-                <div className="flex items-center gap-2 px-2 py-1.5">
-                  <span className="text-[10px] text-emerald-400 shrink-0">✓</span>
-                  <span className="text-[8px] text-slate-400 flex-1 leading-tight italic">Nenhuma penalização detectada</span>
-                  <span className="text-[8px] font-black text-emerald-400 shrink-0">0</span>
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <span className="text-sm text-emerald-400 shrink-0">✓</span>
+                  <span className="text-sm text-slate-400 flex-1 leading-tight italic">Nenhuma penalização detectada</span>
+                  <span className="text-sm font-black text-emerald-400 shrink-0">0</span>
                 </div>
               ) : activeKeys.length === 0 ? (
-                <div className="px-2 py-1.5">
-                  <span className="text-[8px] text-slate-600 italic">Nenhum sinal identificado</span>
+                <div className="px-4 py-3">
+                  <span className="text-sm text-slate-600 italic">Nenhum sinal identificado</span>
                 </div>
               ) : (
                 activeKeys.map(k => {
                   const info = SCORECARD_META[k];
                   const isNegative = info.pts < 0;
                   return (
-                    <div key={k} className="flex items-center gap-2 px-2 py-1.5">
-                      <span className="text-[10px] shrink-0" style={{ color: isNegative ? '#ef4444' : '#10b981' }}>
+                    <div key={k} className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.02] transition-colors">
+                      <span className="text-sm shrink-0" style={{ color: isNegative ? '#ef4444' : '#10b981' }}>
                         {isNegative ? '✗' : '✓'}
                       </span>
-                      <span className="text-[8px] text-slate-300 flex-1 leading-tight">{info.label}</span>
+                      <span className="text-sm text-slate-300 flex-1 leading-tight">{info.label}</span>
                       <span
-                        className="text-[8px] font-black shrink-0 tabular-nums"
+                        className="text-sm font-black shrink-0 tabular-nums"
                         style={{ color: isNegative ? '#ef4444' : '#10b981' }}
                       >
                         {info.pts > 0 ? `+${info.pts}` : info.pts}

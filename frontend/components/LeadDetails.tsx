@@ -176,7 +176,12 @@ export default function LeadDetails({ lead, onClose, onStatusChange }: { lead: a
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm">
+    <div 
+      className="fixed inset-0 md:left-56 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div 
         className="w-full max-w-4xl bg-[#0a0a0c] rounded-2xl overflow-hidden relative shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col animate-in zoom-in-95 max-h-[90vh] transition-colors duration-300"
         style={{ border: `1px solid var(--card-border)`, borderTop: `4px solid ${color}` }}

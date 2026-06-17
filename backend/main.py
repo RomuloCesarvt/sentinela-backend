@@ -132,26 +132,26 @@ def unlock_scan():
     return {"status": "unlocked"}
 
 # --- AUTH & USERS ---
-USERS_FILE = os.path.join(DATA_DIR, "users.json")
 @app.post("/api/auth/login")
 def login_user(payload: dict):
     u = payload.get("username", "")
     p = payload.get("password", "")
-    if u == "admin" and p == "sentinela2026": return {"status": "success", "user": {"username": "admin", "name": "Admin", "role": "admin"}}
-    users = safe_read_json(USERS_FILE, {"users": []}).get("users", [])
-    for usr in users:
-        if usr.get("username") == u and str(usr.get("password")) == str(p):
-            return {"status": "success", "user": {"username": u, "name": usr.get("name"), "role": usr.get("role")}}
-    raise HTTPException(status_code=401)
+    
+    # Tentativa de login no Firebase
+    user = firebase_db.verify_login(u, p)
+    if user:
+        # Não retorna a senha pro frontend
+        return {"status": "success", "user": {"username": user.get("username"), "name": user.get("name"), "role": user.get("role", "sdr")}}
+        
+    raise HTTPException(status_code=401, detail="Usuário ou senha incorretos")
 
 # --- USERS CRUD ---
 @app.get("/api/users")
 def list_users():
-    db = safe_read_json(USERS_FILE, {"users": []})
-    # Retorna lista sem expor senhas
+    users = firebase_db.get_all_users()
     sanitized = [
         {"username": u.get("username"), "name": u.get("name"), "role": u.get("role", "sdr")}
-        for u in db.get("users", [])
+        for u in users if u.get("username") != "admin"
     ]
     return {"users": sanitized}
 
@@ -165,48 +165,43 @@ def create_user(payload: dict):
     if not username or not password or not name:
         raise HTTPException(status_code=400, detail="Nome, usuário e senha são obrigatórios.")
 
-    # Não permite sobrescrever o admin master
     if username == "admin":
         raise HTTPException(status_code=400, detail="Nome de usuário reservado.")
 
-    db = safe_read_json(USERS_FILE, {"users": []})
-    users = db.get("users", [])
+    success = firebase_db.create_user(username, password, name, role)
+    if not success:
+        raise HTTPException(status_code=409, detail="Usuário já cadastrado ou erro no Firebase.")
 
-    # Verifica se usuário já existe
-    if any(u.get("username") == username for u in users):
-        raise HTTPException(status_code=409, detail="Usuário já cadastrado. Escolha outro nome de usuário.")
-
-    users.append({"username": username, "password": password, "name": name, "role": role})
-    db["users"] = users
-    safe_write_json(USERS_FILE, db)
     return {"status": "success", "username": username}
 
 @app.delete("/api/users/{username}")
-def delete_user(username: str):
+def delete_user_route(username: str):
     if username == "admin":
         raise HTTPException(status_code=400, detail="Não é possível remover o admin master.")
-    db = safe_read_json(USERS_FILE, {"users": []})
-    original = db.get("users", [])
-    filtered = [u for u in original if u.get("username") != username]
-    if len(filtered) == len(original):
-        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
-    db["users"] = filtered
-    safe_write_json(USERS_FILE, db)
+    success = firebase_db.delete_user(username)
+    if not success:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado ou erro no Firebase.")
     return {"status": "success"}
 
 @app.put("/api/users/{username}")
-def update_user(username: str, payload: dict):
-    db = safe_read_json(USERS_FILE, {"users": []})
-    users = db.get("users", [])
-    for u in users:
-        if u.get("username") == username:
-            if payload.get("name"): u["name"] = payload["name"]
-            if payload.get("password"): u["password"] = payload["password"]
-            if payload.get("role"): u["role"] = payload["role"]
-            db["users"] = users
-            safe_write_json(USERS_FILE, db)
-            return {"status": "success"}
-    raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+def update_user_route(username: str, payload: dict):
+    if username == "admin":
+        raise HTTPException(status_code=400, detail="Não é possível editar o admin master.")
+        
+    user = firebase_db.get_user(username)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        
+    data = {}
+    if payload.get("name"): data["name"] = payload["name"]
+    if payload.get("password"): data["password"] = payload["password"]
+    if payload.get("role"): data["role"] = payload["role"]
+    
+    success = firebase_db.update_user(username, data)
+    if not success:
+        raise HTTPException(status_code=500, detail="Erro ao atualizar usuário no Firebase.")
+        
+    return {"status": "success"}
 
 # --- SETTINGS (config.json) ---
 @app.get("/api/settings")
@@ -270,74 +265,20 @@ def _apply_schedule(schedule: dict):
 # --- LEAD ENGINE ---
 @app.get("/api/leads")
 def get_leads_route(username: str = None):
-    import glob
-    # Admin vê TODOS os leads de todos os usuários (agregado)
-    if username and username.lower() == 'admin':
-        all_auditores = []
-        # Lê o arquivo global (legado)
-        global_data = safe_read_json(AUDITORIAS_FILE, {"auditores": []})
-        all_auditores.extend(global_data.get("auditores", []))
-        # Lê todos os arquivos por-usuário
-        pattern = os.path.join(DATA_DIR, "auditorias_*.json")
-        for filepath in glob.glob(pattern):
-            user_data = safe_read_json(filepath, {"auditores": []})
-            all_auditores.extend(user_data.get("auditores", []))
-        return {"auditores": all_auditores}
+    # O frontend não espera uma lista de leads plana, ele espera uma lista de auditores,
+    # onde cada auditoria tem uma lista de leads.
+    # Ex: {"auditores": [ {"id": "Sessão Atual", "leads": [...] } ]}
     
-    # Usuários comuns veem SEUS leads + leads globais (para máxima visibilidade)
-    all_auditores = []
+    leads = firebase_db.get_leads_from_firebase(username)
     
-    # 1. Leads do arquivo global/legado (sempre inclui)
-    global_data = safe_read_json(AUDITORIAS_FILE, {"auditores": []})
-    all_auditores.extend(global_data.get("auditores", []))
-    
-    # 2. Leads do arquivo específico do usuário (se existir)
-    if username:
-        user_file = get_auditorias_file(username)
-        if user_file != AUDITORIAS_FILE:  # Evita duplicação se for o mesmo arquivo
-            user_data = safe_read_json(user_file, {"auditores": []})
-            all_auditores.extend(user_data.get("auditores", []))
-    
-    return {"auditores": all_auditores}
+    # Reempacota pro formato esperado pelo frontend (mockando a "auditoria" global)
+    return {"auditores": [{"id": "Sincronizado Nuvem", "leads": leads}]}
 
 @app.delete("/api/leads")
 def delete_leads_route(username: str = None):
-    import glob
-    # Se for admin, limpa TODOS os arquivos
-    if username and username.lower() == 'admin':
-        safe_write_json(AUDITORIAS_FILE, {"auditores": []})
-        pattern = os.path.join(DATA_DIR, "auditorias_*.json")
-        for filepath in glob.glob(pattern):
-            safe_write_json(filepath, {"auditores": []})
-    else:
-        # Se for usuário comum, limpa o seu E o global (pois ele enxerga o global também)
-        target = get_auditorias_file(username) if username else AUDITORIAS_FILE
-        safe_write_json(target, {"auditores": []})
-        if target != AUDITORIAS_FILE:
-            safe_write_json(AUDITORIAS_FILE, {"auditores": []})
-
-    # Deleta do Firebase Firestore
-    try:
-        db = firebase_db.get_db()
-        if db:
-            print("[FIREBASE] Limpando leads no Firestore...")
-            leads_ref = db.collection('leads')
-            docs = leads_ref.list_documents()
-            batch = db.batch()
-            count = 0
-            for doc in docs:
-                batch.delete(doc)
-                count += 1
-                if count >= 400:
-                    batch.commit()
-                    batch = db.batch()
-                    count = 0
-            if count > 0:
-                batch.commit()
-            print("[FIREBASE] Leads limpos no Firestore com sucesso!")
-    except Exception as e:
-        print(f"[FIREBASE] Erro ao limpar leads no Firestore: {e}")
-    
+    success = firebase_db.delete_leads_from_firebase(username)
+    if not success:
+        raise HTTPException(status_code=500, detail="Erro ao limpar leads no Firebase.")
     return {"status": "success"}
 
 @app.patch("/api/leads/{nome}/status")
@@ -345,26 +286,43 @@ def update_lead_status(nome: str, payload: dict, username: str = None):
     """Atualiza o status/classificação de um lead existente sem criar duplicata."""
     from urllib.parse import unquote
     nome_decoded = unquote(nome)
-    target = get_auditorias_file(username or payload.get("username")) if (username or payload.get("username")) else AUDITORIAS_FILE
     
-    db = safe_read_json(target, {"auditores": []})
     nova_classificacao = payload.get("classificacao")
     if not nova_classificacao:
         raise HTTPException(status_code=400, detail="Campo 'classificacao' é obrigatório.")
+        
+    db = firebase_db.get_db()
+    if not db:
+        raise HTTPException(status_code=500, detail="Firebase não configurado.")
+        
+    owner = username or payload.get("username", "admin")
+    doc_id = f"{owner}_{nome_decoded}".lower().strip().replace(' ', '_').replace('/', '_')
+    if len(doc_id) > 100: doc_id = doc_id[:100]
     
-    updated = False
-    for auditoria in db.get("auditores", []):
-        for lead in auditoria.get("leads", []):
-            if (lead.get("nome") or "").lower().strip() == nome_decoded.lower().strip():
-                lead["classificacao"] = nova_classificacao
-                lead["risco_detectado"] = nova_classificacao.lower() == "crítico"
-                lead["_updated_at"] = datetime.now().isoformat()
-                updated = True
-    
-    if not updated:
-        raise HTTPException(status_code=404, detail=f"Lead '{nome_decoded}' não encontrado.")
-    
-    safe_write_json(target, db)
+    doc_ref = db.collection('leads').document(doc_id)
+    if not doc_ref.get().exists:
+        # Fallback: tentar procurar globalmente
+        leads_ref = db.collection('leads')
+        docs = leads_ref.where('nome', '==', nome_decoded).limit(1).stream()
+        found = False
+        for doc in docs:
+            doc.reference.set({
+                "classificacao": nova_classificacao,
+                "risco_detectado": nova_classificacao.lower() == "crítico",
+                "_updated_at": datetime.now().isoformat()
+            }, merge=True)
+            found = True
+            break
+            
+        if not found:
+            raise HTTPException(status_code=404, detail=f"Lead '{nome_decoded}' não encontrado.")
+    else:
+        doc_ref.set({
+            "classificacao": nova_classificacao,
+            "risco_detectado": nova_classificacao.lower() == "crítico",
+            "_updated_at": datetime.now().isoformat()
+        }, merge=True)
+        
     return {"status": "success", "nome": nome_decoded, "classificacao": nova_classificacao}
 
 # ═══════════════════════════════════════════════════════════════
@@ -431,7 +389,7 @@ async def trigger_scan_route(data: dict, background_tasks: BackgroundTasks):
             for auditoria in db_data.get("auditores", []):
                 all_leads.extend(auditoria.get("leads", []))
             if all_leads:
-                firebase_db.sync_leads_to_firebase(all_leads)
+                firebase_db.sync_leads_to_firebase(all_leads, username=requested_by)
             
         except Exception as e:
             error_detail = f"{type(e).__name__}: {str(e)}"
@@ -481,7 +439,7 @@ async def trigger_external_scan(payload: dict, background_tasks: BackgroundTasks
             safe_write_json(user_file, db)
             
             # Sincroniza o lead analisado com o Firebase em tempo real
-            firebase_db.sync_leads_to_firebase([analysis])
+            firebase_db.sync_leads_to_firebase([analysis], username=username)
         except Exception as e: print(f"Erro Externo: {e}")
 
     background_tasks.add_task(process_external)
@@ -563,8 +521,16 @@ def sync_tunnel_url_thread():
 
 @app.on_event("startup")
 async def on_startup():
-    global firebase_scan_lock
+    global firebase_scan_lock, global_scan_lock
     firebase_scan_lock = asyncio.Lock()
+    
+    # Auto-heal: Destrava o sistema ao iniciar/reiniciar o backend
+    global_scan_lock = {"is_locked": False, "locked_by": None, "timestamp": None, "error": None}
+    try:
+        firebase_db.update_system_lock(False)
+        print("[INIT] Lock de segurança liberado no startup (auto-heal).")
+    except Exception as e:
+        print(f"[INIT] Erro ao liberar lock no startup: {e}")
     
     import threading
     threading.Thread(target=sync_tunnel_url_thread, daemon=True).start()
@@ -618,7 +584,7 @@ async def on_startup():
             leads_list = list(all_leads.values())
             if leads_list:
                 print(f"[INIT] Sincronizando {len(leads_list)} leads locais com o Firestore...")
-                firebase_db.sync_leads_to_firebase(leads_list)
+                firebase_db.sync_leads_to_firebase(leads_list, username="Sistema")
         except Exception as e:
             print(f"[INIT] Erro no sync histórico de boot: {e}")
 
@@ -670,7 +636,7 @@ async def on_startup():
                                     for auditoria in db_data.get("auditores", []):
                                         all_leads.extend(auditoria.get("leads", []))
                                     if all_leads:
-                                        firebase_db.sync_leads_to_firebase(all_leads)
+                                        firebase_db.sync_leads_to_firebase(all_leads, username=data["username"])
                                 except Exception as e:
                                     print(f"[SENTINELA] ❌ ERRO NO SCAN (FIREBASE): {e}")
                                     firebase_db.update_system_lock(False, error=str(e))

@@ -482,10 +482,14 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
         context = None
         page = None
         
+        import sys
+        if sys.platform != "win32" or os.environ.get("RENDER"):
+            force_headless = True
+            
         if force_headless:
             diag_print("💻 [FORÇADO HEADLESS] Iniciando Chromium headless silencioso (segundo plano)...")
             try:
-                browser = await pw.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
+                browser = await pw.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'])
                 is_cdp = False
                 diag_print("✅ Chromium headless iniciado em segundo plano.")
             except Exception as headless_err:
@@ -727,7 +731,7 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
         # O loop roda enquanto encontrar leads novos ou ate atingir limite de iteracoes
         for scroll_iter in range(150):
              # Re-busca a lista de elementos toda vez para evitar "Element is not attached to the DOM"
-             leads = await page.query_selector_all('div[class*="ListItem"], a[href*="/conversations/"]')
+             leads = await page.query_selector_all('a[href*="/conversations/"]:not([href*="/groups/"])')
              
              target_lead = None
              for el in leads:
@@ -753,7 +757,7 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                         await page.evaluate("""() => {
                             // 1. Abordagem mais confiável para listas lazy-load: 
                             // Rola o último elemento da lista para a visão
-                            const items = document.querySelectorAll('div[class*="ListItem"], a[href*="/conversations/"]');
+                            const items = document.querySelectorAll('a[href*="/conversations/"]:not([href*="/groups/"])');
                             if (items && items.length > 0) {
                                 const lastItem = items[items.length - 1];
                                 lastItem.scrollIntoView({ behavior: 'smooth', block: 'end' });
@@ -871,7 +875,7 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                   except Exception:
                       pass
                   # Clica usando locator dinâmico e resiliente a DOM re-renders (evita "Element is not attached to the DOM")
-                  el_locator = page.locator('div[class*="ListItem"], a[href*="/conversations/"]').filter(has_text=name).first
+                  el_locator = page.locator('a[href*="/conversations/"]:not([href*="/groups/"])').filter(has_text=name).first
                   await el_locator.click(force=True)
                   await asyncio.sleep(1.5) 
                   
@@ -1090,7 +1094,19 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                   except Exception:
                       pass
                   
-                  # Delay entre análises para respeitar rate-limits
+                  # Recuperar barra lateral em telas pequenas (Mobile View do Morada AI)
+                  try:
+                      await page.evaluate("""() => {
+                          const btnBack = document.querySelector('button[aria-label*="voltar" i], button[aria-label*="back" i], button svg[class*="arrow-left"]');
+                          if (btnBack) {
+                              const clickable = btnBack.closest('button') || btnBack;
+                              clickable.click();
+                          }
+                      }""")
+                  except Exception as back_err:
+                      diag_print(f"Erro ao tentar clicar em voltar: {back_err}")
+
+                  # Delay entre análises para respeitar rate-limits e dar tempo da barra lateral voltar
                   await asyncio.sleep(3)
                   
              except Exception as e:

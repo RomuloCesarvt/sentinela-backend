@@ -16,8 +16,13 @@ def get_db():
             return _db
             
         key_path = os.path.join(os.path.dirname(__file__), "firebase-key.json")
+        docker_secret_path = "/etc/secrets/firebase-key.json"
+        
+        if os.path.exists(docker_secret_path):
+            key_path = docker_secret_path
+            
         if not os.path.exists(key_path):
-            print(f"[FIREBASE] Arquivo {key_path} não encontrado! Sincronização em nuvem desativada.")
+            print(f"[FIREBASE] Arquivos {key_path} e {docker_secret_path} não encontrados! Sincronização desativada.")
             return None
             
         try:

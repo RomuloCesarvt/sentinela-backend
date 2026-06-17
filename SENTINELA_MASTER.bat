@@ -18,9 +18,9 @@ set EDGE_PATH="C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 if not exist %EDGE_PATH% set EDGE_PATH="C:\Program Files\Microsoft\Edge\Application\msedge.exe"
 set EDGE_PROFILE="%LOCALAPPDATA%\Microsoft\Edge\User Data"
 
-:: 3. Abre o Morada AI com porta de depuracao (necessario para o robo entrar)
-echo [SENTINELA] Abrindo Morada AI no navegador...
-start "" %EDGE_PATH% --remote-debugging-port=9333 --remote-allow-origins=* --user-data-dir=%EDGE_PROFILE% https://app.morada.ai/conversations
+:: 3. Abre o Dashboard e o Morada AI com porta de depuracao (necessario para o robo entrar)
+echo [SENTINELA] Abrindo Dashboard e Morada AI no navegador...
+start "" %EDGE_PATH% --remote-debugging-port=9333 --remote-allow-origins=* --user-data-dir=%EDGE_PROFILE% "https://frontend-eight-ruddy-53.vercel.app/" "https://app.morada.ai/conversations"
 timeout /t 3 /nobreak >nul 2>&1
 
 :: 4. Inicia o backend Python (motor de IA + listener Firebase)

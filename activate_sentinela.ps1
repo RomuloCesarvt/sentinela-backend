@@ -1,22 +1,35 @@
 # Script para ativar o Sentinela Vercel via Antigravity
 $ErrorActionPreference = "SilentlyContinue"
 
+# Garante que o script rode na pasta correta
+Set-Location $PSScriptRoot
+
 Write-Host "--- Iniciando Sentinela IA (Modo Automático) ---"
 
+Write-Host "[1/4] Abrindo Chrome (Morada AI + Dashboard)..."
+Stop-Process -Name chrome -Force -ErrorAction SilentlyContinue
+Start-Sleep -Seconds 2
+$chromePath = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe' -Name '(Default)' -ErrorAction SilentlyContinue).'(Default)'
+if (-not $chromePath) { $chromePath = (Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe' -Name '(Default)' -ErrorAction SilentlyContinue).'(Default)' }
+if (-not $chromePath) { $chromePath = "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe" }
+$chromeProfile = "$env:LOCALAPPDATA\Google\Chrome\User Data"
+Start-Process $chromePath -ArgumentList "--remote-debugging-port=9333 --remote-allow-origins=* --user-data-dir=""$chromeProfile"" ""https://frontend-eight-ruddy-53.vercel.app/"" ""https://app.morada.ai/conversations""" -WindowStyle Normal
+Start-Sleep -Seconds 3
+
 # 1. Iniciar Backend
-Write-Host "[1/4] Iniciando Backend Python..."
-Start-Process python -ArgumentList "backend\main.py" -WorkingDirectory $PWD -WindowStyle Hidden
+Write-Host "[2/4] Iniciando Backend Python..."
+Start-Process python -ArgumentList "backend\main.py" -WorkingDirectory $PWD.Path -WindowStyle Hidden
 
 # 2. Iniciar Túnel Cloudflare
 Write-Host "[2/4] Iniciando Túnel Cloudflare..."
-$tunnelLog = "logs\tunnel.log"
-if (!(Test-Path "logs")) { New-Item -ItemType Directory -Path "logs" }
+$tunnelLog = Join-Path $PWD "logs\tunnel.log"
+if (!(Test-Path "logs")) { New-Item -ItemType Directory -Path "logs" | Out-Null }
 if (Test-Path $tunnelLog) { Remove-Item $tunnelLog }
 
 # Mata processos antigos
 Stop-Process -Name cloudflared -Force -ErrorAction SilentlyContinue
 
-Start-Process "cloudflared" -ArgumentList "tunnel --url http://localhost:8000" -RedirectStandardOutput $tunnelLog -RedirectStandardError $tunnelLog -WindowStyle Hidden
+Start-Process cmd -ArgumentList "/c cloudflared tunnel --url http://localhost:8000 > ""$tunnelLog"" 2>&1" -WindowStyle Hidden
 
 # 3. Aguardar e Capturar URL
 Write-Host "[3/4] Aguardando URL do Túnel..."
@@ -24,7 +37,7 @@ $url = $null
 for ($i = 0; $i -lt 30; $i++) {
     Start-Sleep -Seconds 1
     if (Test-Path $tunnelLog) {
-        $content = Get-Content $tunnelLog
+        $content = Get-Content $tunnelLog -Raw
         if ($content -match 'https://[a-z0-9-]+\.trycloudflare\.com') {
             $url = $matches[0]
             break

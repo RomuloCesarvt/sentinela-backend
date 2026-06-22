@@ -121,28 +121,21 @@ export default function Dashboard() {
       return;
     }
     
+    // A EXTENSÃO É OBRIGATÓRIA AGORA
+    if (document.documentElement.dataset.sentinelaExtension !== "true") {
+        alert("A Extensão do Sentinela não está instalada ou ativada na página!\n\nPor favor, atualize a página (F5) para a extensão se conectar ou verifique se ela está ativada no seu navegador.");
+        return;
+    }
+
     await setDoc(doc(db, 'system', 'lock'), { is_locked: true, locked_by: user.username, error: null, timestamp: new Date().toISOString() }, { merge: true });
     
-    // 1. TENTA USAR A EXTENSÃO (Abre aba ao lado no seu Chrome atual)
-    if (document.documentElement.dataset.sentinelaExtension === "true") {
-        window.dispatchEvent(new CustomEvent('SENTINELA_SCAN_TRIGGER', { 
-            detail: { 
-                period, 
-                username: user.username,
-                backendUrl: backendUrl || process.env.NEXT_PUBLIC_API_URL || window.location.origin
-            } 
-        }));
-    } 
-    // 2. FALLBACK PARA O BACKEND PYTHON
-    else {
-        await addDoc(collection(db, 'commands'), {
-            command: 'scan',
-            status: 'pending',
-            period,
+    window.dispatchEvent(new CustomEvent('SENTINELA_SCAN_TRIGGER', { 
+        detail: { 
+            period, 
             username: user.username,
-            timestamp: Date.now()
-        });
-    }
+            backendUrl: backendUrl || process.env.NEXT_PUBLIC_API_URL || window.location.origin
+        } 
+    }));
   };
 
   const handleClear = async () => {

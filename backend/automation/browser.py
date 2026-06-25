@@ -265,41 +265,51 @@ def clean_message_history(raw_history: list, lead_name: str) -> list:
 
 
 
-def get_browser_paths():
-    """Retorna o executável e o diretório de perfil para Chrome ou Edge (preferindo Edge)."""
-    profile_dir = os.path.join(DATA_DIR, "browser_profile")
+def get_browser_paths(preferred: str = "auto"):
+    """Retorna o executável e o diretório de perfil para Chrome ou Edge.
     
-    # 1. Microsoft Edge paths
-    edge_paths = [
-        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
-        os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Edge\Application\msedge.exe")
-    ]
-    edge_exe = next((ep for ep in edge_paths if os.path.exists(ep)), None)
-    if edge_exe:
-        return {
-            "type": "edge",
-            "exe": edge_exe,
-            "profile": profile_dir,
-            "process_name": "msedge.exe"
-        }
-        
-    # 2. Google Chrome fallback
+    Args:
+        preferred: 'chrome', 'edge', ou 'auto' (auto = Chrome > Edge)
+    """
+    # Perfis reais dos navegadores (onde o usuário já está logado no Morada)
+    chrome_user_data = os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\User Data")
+    edge_user_data = os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Edge\User Data")
+    
+    # Google Chrome paths
     chrome_paths = [
         r"C:\Program Files\Google\Chrome\Application\chrome.exe",
         r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
         os.path.expandvars(r"%LOCALAPPDATA%\Google\Chrome\Application\chrome.exe")
     ]
     chrome_exe = next((cp for cp in chrome_paths if os.path.exists(cp)), None)
-    if chrome_exe:
-        return {
-            "type": "chrome",
-            "exe": chrome_exe,
-            "profile": profile_dir,
-            "process_name": "chrome.exe"
-        }
-        
-    return None
+    chrome_info = {
+        "type": "chrome",
+        "exe": chrome_exe,
+        "profile": chrome_user_data,
+        "process_name": "chrome.exe"
+    } if chrome_exe else None
+    
+    # Microsoft Edge paths
+    edge_paths = [
+        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+        r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+        os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Edge\Application\msedge.exe")
+    ]
+    edge_exe = next((ep for ep in edge_paths if os.path.exists(ep)), None)
+    edge_info = {
+        "type": "edge",
+        "exe": edge_exe,
+        "profile": edge_user_data,
+        "process_name": "msedge.exe"
+    } if edge_exe else None
+    
+    # Seleciona conforme a preferência
+    if preferred == "chrome":
+        return chrome_info or edge_info
+    elif preferred == "edge":
+        return edge_info or chrome_info
+    else:  # auto: Chrome > Edge
+        return chrome_info or edge_info
 
 def kill_process_on_port(port: int):
     """Localiza e finaliza o processo que está ocupando a porta especificada (evita conflitos de CDP)."""
@@ -475,6 +485,29 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
     morada_login = config.get("morada_login", "")
     morada_pass = config.get("morada_pass", "")
     dashboard_url = config.get("dashboard_url", "https://frontend-eight-ruddy-53.vercel.app/")
+    preferred_browser = config.get("preferred_browser", "auto")
+    
+    # Inicializa log de progresso no Firebase
+    import firebase_db as _fb_log
+    _scan_errors = []
+    def _log_progress(status, message, current_lead="", total_scanned=0, total_skipped=0, total_seen=0):
+        try:
+            _fb_log.update_scan_log({
+                'status': status,
+                'message': message,
+                'current_lead': current_lead,
+                'total_scanned': total_scanned,
+                'total_skipped': total_skipped,
+                'total_seen': total_seen,
+                'errors': _scan_errors[-10:],  # Últimos 10 erros
+                'scan_id': scan_id,
+                'username': username or 'Sistema',
+                'period': period
+            })
+        except Exception:
+            pass
+    
+    _log_progress('starting', f'Iniciando scan (período: {period})...')
     
     async with async_playwright() as pw:
         is_cdp = False
@@ -488,15 +521,19 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
             
         if force_headless:
             diag_print("💻 [FORÇADO HEADLESS] Iniciando Chromium headless silencioso (segundo plano)...")
+            _log_progress('starting', 'Iniciando Chromium headless...')
             try:
                 browser = await pw.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'])
                 is_cdp = False
                 diag_print("✅ Chromium headless iniciado em segundo plano.")
             except Exception as headless_err:
+                _scan_errors.append(f"Falha headless: {headless_err}")
+                _log_progress('error', f'Falha ao iniciar headless: {headless_err}')
                 raise Exception(f"Falha ao iniciar Chromium headless: {headless_err}")
         else:
             # ═══ FASE 1: OBTER NAVEGADOR ═══
-            browser_info = get_browser_paths()
+            browser_info = get_browser_paths(preferred_browser)
+            _log_progress('starting', f'Abrindo navegador ({preferred_browser})...')
             if not browser_info:
                 raise Exception("Nenhum navegador suportado (Chrome ou Edge) foi encontrado!")
                 
@@ -727,6 +764,7 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
         total_old_leads_seen = 0  # apenas para log/diagnóstico, NÃO para parar o scan
         
         diag_print(f"📋 Iniciando varredura de leads — Período: {period}")
+        _log_progress('scanning', 'Iniciando varredura de leads...', total_seen=0)
         
         # O loop roda enquanto encontrar leads novos ou ate atingir limite de iteracoes
         for scroll_iter in range(150):
@@ -868,6 +906,7 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                       total_old_leads_seen += 1
                       total_skipped_period += 1
                       diag_print(f"⏭️ Lead '{name}' fora do período '{period}' ({lead_elapsed_hours:.1f}h > {max_allowed_hours}h). Pulando [{total_old_leads_seen} fora do período até agora]...")
+                      _log_progress('scanning', f'Pulado (fora do período): {name}', current_lead=name, total_scanned=total_analyzed, total_skipped=total_skipped_period, total_seen=len(seen))
                       continue
 
                   try:
@@ -892,6 +931,7 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                   }""")
                   header_name = header_name or name
                   diag_print(f"Auditando: {header_name}")
+                  _log_progress('analyzing', f'Analisando: {header_name}', current_lead=header_name, total_scanned=total_analyzed, total_skipped=total_skipped_period, total_seen=len(seen))
 
                   # Extrair URL da conversa do Morada
                   lead_url = await page.evaluate("window.location.href")
@@ -1029,6 +1069,7 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                       continue
                   
                   total_analyzed += 1
+                  _log_progress('scanning', f'Concluído: {header_name}', current_lead=header_name, total_scanned=total_analyzed, total_skipped=total_skipped_period, total_seen=len(seen))
 
                   # AI Context Sync - Injeta TODAS as chaves disponíveis
                   config_data = get_config()
@@ -1113,6 +1154,8 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                    err_msg = str(e)
                    err_type = type(e).__name__
                    diag_print(f"Erro em {name} ({err_type}): {e}")
+                   _scan_errors.append(f"{name}: {err_type} - {str(e)[:80]}")
+                   _log_progress('scanning', f'Erro em {name}: {err_type}', current_lead=name, total_scanned=total_analyzed, total_skipped=total_skipped_period, total_seen=len(seen))
                    # Cooldown de 2 segundos
                    await asyncio.sleep(2)
                    if 'TargetClosed' in err_type or 'TargetClosed' in err_msg or ('closed' in err_msg.lower() and ('browser' in err_msg.lower() or 'page' in err_msg.lower() or 'target' in err_msg.lower())):
@@ -1185,6 +1228,7 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
                        continue
 
         diag_print(f"═══ Scan finalizado. Total leads vistos: {len(seen)} | Analisados com IA: {total_analyzed} | Fora do período: {total_skipped_period} ═══")
+        _log_progress('completed', f'Scan concluído! {total_analyzed} leads analisados, {total_skipped_period} fora do período.', total_scanned=total_analyzed, total_skipped=total_skipped_period, total_seen=len(seen))
         try:
             await page.evaluate("window.updateSentinelaAura('success', 'CONCLUÍDO')")
         except Exception:
@@ -1203,12 +1247,22 @@ async def extract_morada_leads(period: str = "24h", custom_range: dict = None, s
         except Exception as fb_err:
             diag_print(f"Erro ao sincronizar com nuvem: {fb_err}")
         
-        # Desconecta ou fecha o contexto corretamente persistente
-        if is_cdp:
-            pass # Playwright will disconnect automatically on context manager exit, do not close the user's browser
-        else:
+        # ═══ AUTO-CLOSE: Aguarda 2 minutos e fecha o navegador ═══
+        if not is_cdp:
+            diag_print("⏳ Navegador será fechado em 2 minutos. Verifique os resultados se necessário.")
+            _log_progress('closing', 'Navegador fecha em 2 minutos...', total_scanned=total_analyzed, total_skipped=total_skipped_period, total_seen=len(seen))
+            await asyncio.sleep(120)  # 2 minutos
             try:
                 await context.close()
+                diag_print("✅ Navegador fechado automaticamente.")
             except:
                 pass
-
+        else:
+            # CDP: navegador já era do usuário, apenas desconecta (não fecha)
+            diag_print("ℹ️ Navegador CDP desconectado (não fechado — pertence ao usuário).")
+        
+        # Limpa o log de scan no Firebase
+        try:
+            _fb_log.clear_scan_log()
+        except Exception:
+            pass

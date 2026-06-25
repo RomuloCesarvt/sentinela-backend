@@ -199,3 +199,48 @@ def update_system_lock(is_locked, locked_by=None, error=None):
         }, merge=True)
     except Exception as e:
         print(f"[FIREBASE] Erro lock: {e}")
+
+def update_scan_log(data: dict):
+    """Atualiza o log de progresso do scan em tempo real no Firebase.
+    
+    Args:
+        data: dict com campos como:
+            - status: 'starting' | 'scanning' | 'analyzing' | 'completed' | 'error'
+            - current_lead: nome do lead sendo analisado
+            - total_scanned: total de leads analisados até agora
+            - total_skipped: total de leads fora do período
+            - total_seen: total de leads vistos na lista
+            - errors: lista de erros encontrados
+            - message: mensagem descritiva do que está acontecendo
+            - scan_id: ID do scan atual
+            - username: quem iniciou o scan
+    """
+    db = get_db()
+    if not db: return
+    try:
+        doc_ref = db.collection('system').document('scan_log')
+        data['_updated_at'] = firestore.SERVER_TIMESTAMP
+        doc_ref.set(data, merge=True)
+    except Exception as e:
+        print(f"[FIREBASE] Erro scan_log: {e}")
+
+def clear_scan_log():
+    """Limpa o log de scan ao finalizar."""
+    db = get_db()
+    if not db: return
+    try:
+        doc_ref = db.collection('system').document('scan_log')
+        doc_ref.set({
+            'status': 'idle',
+            'current_lead': '',
+            'total_scanned': 0,
+            'total_skipped': 0,
+            'total_seen': 0,
+            'errors': [],
+            'message': '',
+            'scan_id': '',
+            'username': '',
+            '_updated_at': firestore.SERVER_TIMESTAMP
+        })
+    except Exception as e:
+        print(f"[FIREBASE] Erro ao limpar scan_log: {e}")

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import AuraIsland from '../../components/AuraIsland';
-import { ShieldCheck, Cpu, Database, Save, RotateCcw, Zap, Shield, Scan } from 'lucide-react';
+import { ShieldCheck, Cpu, Database, Save, RotateCcw, Zap, Shield, Scan, Monitor } from 'lucide-react';
 
 export default function SettingsPage() {
   const [config, setConfig] = useState({
@@ -13,7 +13,8 @@ export default function SettingsPage() {
     groq_key: '',
     email_sender: '',
     email_password: '',
-    email_recipient: ''
+    email_recipient: '',
+    preferred_browser: 'auto'
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -78,51 +79,66 @@ export default function SettingsPage() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* SEÇÃO DA EXTENSÃO - SEMPRE DISPONÍVEL */}
+          {/* NAVEGADOR PREFERIDO */}
           <div className="bg-gradient-to-br from-blue-600/10 via-transparent to-transparent border border-blue-500/20 p-8 rounded-3xl relative overflow-hidden group col-span-1 lg:col-span-2">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity text-blue-500">
-                <Scan size={80} />
+                <Monitor size={80} />
             </div>
             
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+            <div className="flex flex-col md:flex-row items-start justify-between gap-8 relative z-10">
                <div className="flex-1">
                   <div className="flex items-center gap-3 mb-4">
                      <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
-                        <Scan size={16} />
+                        <Monitor size={16} />
                      </div>
-                     <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Extensão Oficial Sentinela IA</h3>
+                     <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Navegador para Scan</h3>
                   </div>
                   <p className="text-[10px] text-slate-400 font-medium leading-relaxed mb-6 max-w-xl">
-                     A extensão é o "braço" do Sentinela no seu navegador. Ela permite que a IA audite conversas diretamente no Morada AI sem que você precise configurar nada na sua máquina.
+                     Escolha qual navegador o Sentinela deve usar para abrir o Morada AI e fazer a auditoria. O sistema usará o perfil real do navegador (onde você já está logado).
                   </p>
-                  <a 
-                    href="/sentinela_extensao.zip"
-                    download="sentinela_extensao.zip"
-                    className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-blue-600/20"
-                  >
-                     <Save size={14} />
-                     Baixar Pacote de Instalação (.ZIP)
-                  </a>
+                  
+                  <div className="flex flex-wrap gap-3">
+                    {[
+                      { value: 'auto', label: 'Automático', desc: 'Detecta automaticamente' },
+                      { value: 'chrome', label: 'Google Chrome', desc: 'Prioriza Chrome' },
+                      { value: 'edge', label: 'Microsoft Edge', desc: 'Prioriza Edge' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => setConfig({...config, preferred_browser: opt.value})}
+                        className={`px-6 py-4 rounded-2xl border transition-all text-left ${
+                          config.preferred_browser === opt.value 
+                            ? 'bg-blue-600/20 border-blue-500/50 shadow-lg shadow-blue-600/10' 
+                            : 'bg-black/30 border-white/5 hover:border-white/10'
+                        }`}
+                      >
+                        <span className={`block text-[10px] font-black uppercase tracking-widest mb-1 ${
+                          config.preferred_browser === opt.value ? 'text-blue-400' : 'text-slate-400'
+                        }`}>{opt.label}</span>
+                        <span className="block text-[8px] font-bold text-slate-600 uppercase tracking-wider">{opt.desc}</span>
+                      </button>
+                    ))}
+                  </div>
                </div>
                
-               <div className="w-full md:w-[350px] bg-black/40 border border-white/5 p-6 rounded-[2rem] backdrop-blur-sm">
-                  <h4 className="text-[8px] font-black text-blue-400 uppercase tracking-widest mb-4">Manual de Instalação:</h4>
+               <div className="w-full md:w-[300px] bg-black/40 border border-white/5 p-6 rounded-[2rem] backdrop-blur-sm">
+                  <h4 className="text-[8px] font-black text-blue-400 uppercase tracking-widest mb-4">Como funciona:</h4>
                   <ul className="text-[9px] text-slate-500 space-y-3 font-bold uppercase tracking-[0.05em]">
                      <li className="flex gap-2">
                         <span className="text-blue-500">01.</span>
-                        <span>Baixe e <span className="text-slate-300">Extraia o ZIP</span> acima.</span>
+                        <span>O <span className="text-slate-300">backend local</span> roda no seu PC.</span>
                      </li>
                      <li className="flex gap-2">
                         <span className="text-blue-500">02.</span>
-                        <span>No Chrome, vá em <span className="text-slate-300">Extensões</span>.</span>
+                        <span>Ao clicar <span className="text-slate-300">Master Scan</span>, ele abre o navegador.</span>
                      </li>
                      <li className="flex gap-2">
                         <span className="text-blue-500">03.</span>
-                        <span>Ative o <span className="text-slate-300">Modo Desenvolvedor</span>.</span>
+                        <span>Usa seu <span className="text-slate-300">perfil logado</span> no Morada AI.</span>
                      </li>
                      <li className="flex gap-2">
                         <span className="text-blue-500">04.</span>
-                        <span>Clique em <span className="text-slate-300">Carregar sem compactação</span> e selecione a pasta extraída.</span>
+                        <span>O navegador <span className="text-slate-300">fecha em 2 min</span> após o scan.</span>
                      </li>
                   </ul>
                </div>

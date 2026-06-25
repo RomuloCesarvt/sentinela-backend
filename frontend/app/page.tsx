@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AuraIsland from '../components/AuraIsland';
 import LeadKanban from '../components/LeadKanban';
-import { BarChart3, ShieldAlert, Sparkles, CheckCircle2, Trash2, Scan, Clock, Shield, LayoutGrid, Download } from 'lucide-react';
+import { BarChart3, ShieldAlert, Sparkles, CheckCircle2, Trash2, Scan, Clock, Shield, LayoutGrid, Download, Activity } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { collection, doc, onSnapshot, addDoc, setDoc, getDocs, deleteDoc } from 'firebase/firestore';
 
@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [scanLock, setScanLock] = useState({ is_locked: false, locked_by: null });
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [backendUrl, setBackendUrl] = useState('');
+  const [scanLog, setScanLog] = useState<any>(null);
 
   // Usa URLs relativas para funcionar perfeitamente no Cloudflare Tunnel e localhost
   const API_BASE = '/api';
@@ -101,10 +102,23 @@ export default function Dashboard() {
       }
     });
 
+    // Listener de log de progresso do scan em tempo real
+    const unsubScanLog = onSnapshot(doc(db, 'system', 'scan_log'), (docSnap) => {
+      if (docSnap.exists()) {
+        const logData = docSnap.data();
+        if (logData.status && logData.status !== 'idle') {
+          setScanLog(logData);
+        } else {
+          setScanLog(null);
+        }
+      }
+    });
+
     return () => {
       unsubLeads();
       unsubLock();
       unsubConfig();
+      unsubScanLog();
     };
   }, [router]);
 
@@ -120,22 +134,24 @@ export default function Dashboard() {
       handleForceUnlock();
       return;
     }
-    
-    // A EXTENSÃO É OBRIGATÓRIA AGORA
-    if (document.documentElement.dataset.sentinelaExtension !== "true") {
-        alert("A Extensão do Sentinela não está instalada ou ativada na página!\n\nPor favor, atualize a página (F5) para a extensão se conectar ou verifique se ela está ativada no seu navegador.");
-        return;
-    }
 
-    await setDoc(doc(db, 'system', 'lock'), { is_locked: true, locked_by: user.username, error: null, timestamp: new Date().toISOString() }, { merge: true });
-    
-    window.dispatchEvent(new CustomEvent('SENTINELA_SCAN_TRIGGER', { 
-        detail: { 
-            period, 
-            username: user.username,
-            backendUrl: backendUrl || process.env.NEXT_PUBLIC_API_URL || window.location.origin
-        } 
-    }));
+    try {
+      // Trava o scan no Firebase
+      await setDoc(doc(db, 'system', 'lock'), { is_locked: true, locked_by: user.username, error: null, timestamp: new Date().toISOString() }, { merge: true });
+      
+      // Envia comando de scan via Firebase — o backend local escuta e executa
+      await addDoc(collection(db, 'commands'), {
+        command: 'scan',
+        status: 'pending',
+        username: user.username || 'admin',
+        period: period,
+        timestamp: Date.now()
+      });
+    } catch (err) {
+      console.error('Erro ao enviar scan:', err);
+      alert('❌ Erro ao enviar comando de scan. Verifique sua conexão.');
+      await setDoc(doc(db, 'system', 'lock'), { is_locked: false, locked_by: null, error: 'Erro ao enviar comando' }, { merge: true });
+    }
   };
 
   const handleClear = async () => {
@@ -252,6 +268,51 @@ export default function Dashboard() {
              </div>
           </div>
         </header>
+
+        {/* SCAN PROGRESS LOG */}
+        {scanLog && scanLog.status !== 'idle' && (
+          <div 
+            className="border p-4 rounded-xl relative overflow-hidden animate-pulse-slow transition-all duration-300"
+            style={{ backgroundColor: 'var(--background-2)', borderColor: scanLog.status === 'error' ? 'rgba(239,68,68,0.3)' : scanLog.status === 'completed' ? 'rgba(16,185,129,0.3)' : 'rgba(59,130,246,0.3)' }}
+          >
+            <div className="flex items-center gap-3">
+              <Activity size={14} className={`${
+                scanLog.status === 'error' ? 'text-red-400' : 
+                scanLog.status === 'completed' ? 'text-emerald-400' : 
+                'text-blue-400 animate-spin'
+              }`} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-widest text-white/90 truncate">
+                  {scanLog.message || 'Processando...'}
+                </p>
+                <div className="flex items-center gap-4 mt-1">
+                  <span className="text-[8px] font-bold text-blue-400 uppercase tracking-wider">
+                    ✅ {scanLog.total_scanned || 0} analisados
+                  </span>
+                  <span className="text-[8px] font-bold text-yellow-400 uppercase tracking-wider">
+                    ⏭️ {scanLog.total_skipped || 0} fora do período
+                  </span>
+                  <span className="text-[8px] font-bold text-slate-500 uppercase tracking-wider">
+                    👁️ {scanLog.total_seen || 0} vistos
+                  </span>
+                  {scanLog.errors && scanLog.errors.length > 0 && (
+                    <span className="text-[8px] font-bold text-red-400 uppercase tracking-wider">
+                      ❌ {scanLog.errors.length} erros
+                    </span>
+                  )}
+                </div>
+              </div>
+              {scanLog.current_lead && (
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-lg">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                  <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wider truncate max-w-[200px]">
+                    {scanLog.current_lead}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* METRICS */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 w-full">
